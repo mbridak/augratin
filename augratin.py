@@ -103,6 +103,11 @@ class MainWindow(QtWidgets.QMainWindow):
                 ) as file_descriptor:
                     file_descriptor.write(dumps(self.settings, indent=4))
                     logging.info("writing: %s", self.settings)
+            if os.path.exists(f"{home}/.augratin_watched.json"):
+                with open(
+                    f"{home}/.augratin_watched.json", "rt", encoding="utf-8"
+                ) as file_descriptor:
+                    self.workedlist = loads(file_descriptor.read())
         except IOError as exception:
             logging.critical("%s", exception)
         self.isflrunning = self.checkflrun() or SERVER_ADDRESS != "localhost:12345"
@@ -438,7 +443,7 @@ class MainWindow(QtWidgets.QMainWindow):
             pass
 
     def item_double_clicked(self):
-        """If a list item is double clicked a green highlight will be toggles"""
+        """If a list item is double clicked a green highlight will be toggled"""
         item = self.listWidget.currentItem()
         line = item.text().split()
         if line[1] in self.workedlist:
@@ -446,6 +451,14 @@ class MainWindow(QtWidgets.QMainWindow):
         else:
             self.workedlist.append(line[1])
         self.showspots()
+        try:
+            home = os.path.expanduser("~")
+            with open(
+                f"{home}/.augratin_watched.json", "wt", encoding="utf-8"
+            ) as file_descriptor:
+                file_descriptor.write(dumps(self.workedlist))
+        except IOError as exception:
+            logging.critical("%s", exception)
 
     @staticmethod
     def getband(freq):
