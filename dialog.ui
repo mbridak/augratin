@@ -57,6 +57,9 @@ color: rgb(211, 215, 207);</string>
       <family>JetBrains Mono</family>
      </font>
     </property>
+    <property name="focusPolicy">
+     <enum>Qt::ClickFocus</enum>
+    </property>
     <property name="autoFillBackground">
      <bool>false</bool>
     </property>
@@ -78,6 +81,9 @@ color: rgb(211, 215, 207);</string>
       <family>JetBrains Mono</family>
      </font>
     </property>
+    <property name="focusPolicy">
+     <enum>Qt::ClickFocus</enum>
+    </property>
     <property name="placeholderText">
      <string>XX-####</string>
     </property>
@@ -95,6 +101,9 @@ color: rgb(211, 215, 207);</string>
      <font>
       <family>JetBrains Mono</family>
      </font>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::ClickFocus</enum>
     </property>
     <property name="placeholderText">
      <string>Comments</string>
@@ -114,6 +123,9 @@ color: rgb(211, 215, 207);</string>
       <family>JetBrains Mono</family>
      </font>
     </property>
+    <property name="focusPolicy">
+     <enum>Qt::TabFocus</enum>
+    </property>
     <property name="placeholderText">
      <string>599</string>
     </property>
@@ -131,6 +143,9 @@ color: rgb(211, 215, 207);</string>
      <font>
       <family>JetBrains Mono</family>
      </font>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::TabFocus</enum>
     </property>
     <property name="text">
      <string>599</string>
@@ -153,6 +168,9 @@ color: rgb(211, 215, 207);</string>
       <family>JetBrains Mono</family>
      </font>
     </property>
+    <property name="focusPolicy">
+     <enum>Qt::ClickFocus</enum>
+    </property>
     <property name="placeholderText">
      <string>HHMMSS</string>
     </property>
@@ -170,6 +188,9 @@ color: rgb(211, 215, 207);</string>
      <font>
       <family>JetBrains Mono</family>
      </font>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::ClickFocus</enum>
     </property>
     <property name="placeholderText">
      <string>YYYYMMDD</string>
@@ -255,6 +276,9 @@ color: rgb(211, 215, 207);</string>
          <family>JetBrains Mono</family>
          <pointsize>12</pointsize>
         </font>
+       </property>
+       <property name="focusPolicy">
+        <enum>Qt::ClickFocus</enum>
        </property>
        <item>
         <property name="text">
@@ -344,6 +368,9 @@ color: rgb(211, 215, 207);</string>
          <pointsize>12</pointsize>
         </font>
        </property>
+       <property name="focusPolicy">
+        <enum>Qt::ClickFocus</enum>
+       </property>
        <item>
         <property name="text">
          <string>All</string>
@@ -411,6 +438,9 @@ color: rgb(211, 215, 207);</string>
       <family>JetBrains Mono</family>
      </font>
     </property>
+    <property name="focusPolicy">
+     <enum>Qt::ClickFocus</enum>
+    </property>
     <property name="placeholderText">
      <string>Activator Name</string>
     </property>
@@ -428,6 +458,9 @@ color: rgb(211, 215, 207);</string>
      <font>
       <family>JetBrains Mono</family>
      </font>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::ClickFocus</enum>
     </property>
     <property name="placeholderText">
      <string>Park Name</string>
@@ -447,6 +480,9 @@ color: rgb(211, 215, 207);</string>
       <family>JetBrains Mono</family>
      </font>
     </property>
+    <property name="focusPolicy">
+     <enum>Qt::ClickFocus</enum>
+    </property>
     <property name="placeholderText">
      <string>Section</string>
     </property>
@@ -465,6 +501,9 @@ color: rgb(211, 215, 207);</string>
       <family>JetBrains Mono</family>
      </font>
     </property>
+    <property name="focusPolicy">
+     <enum>Qt::ClickFocus</enum>
+    </property>
     <property name="placeholderText">
      <string>State</string>
     </property>
@@ -482,6 +521,9 @@ color: rgb(211, 215, 207);</string>
      <font>
       <family>JetBrains Mono</family>
      </font>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::ClickFocus</enum>
     </property>
     <property name="alignment">
      <set>Qt::AlignCenter</set>
@@ -504,6 +546,9 @@ color: rgb(211, 215, 207);</string>
       <family>JetBrains Mono</family>
      </font>
     </property>
+    <property name="focusPolicy">
+     <enum>Qt::ClickFocus</enum>
+    </property>
     <property name="alignment">
      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
     </property>
@@ -524,6 +569,9 @@ color: rgb(211, 215, 207);</string>
      <font>
       <family>JetBrains Mono</family>
      </font>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::ClickFocus</enum>
     </property>
     <property name="alignment">
      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -546,6 +594,9 @@ color: rgb(211, 215, 207);</string>
       <family>JetBrains Mono</family>
      </font>
     </property>
+    <property name="focusPolicy">
+     <enum>Qt::ClickFocus</enum>
+    </property>
     <property name="placeholderText">
      <string>Mode</string>
     </property>
@@ -563,6 +614,9 @@ color: rgb(211, 215, 207);</string>
      <font>
       <family>JetBrains Mono</family>
      </font>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::ClickFocus</enum>
     </property>
     <property name="placeholderText">
      <string>000M</string>
@@ -582,6 +636,9 @@ color: rgb(211, 215, 207);</string>
       <family>JetBrains Mono</family>
      </font>
     </property>
+    <property name="focusPolicy">
+     <enum>Qt::ClickFocus</enum>
+    </property>
     <property name="placeholderText">
      <string>000000000</string>
     </property>
@@ -599,6 +656,9 @@ color: rgb(211, 215, 207);</string>
      <font>
       <family>JetBrains Mono</family>
      </font>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::ClickFocus</enum>
     </property>
     <property name="placeholderText">
      <string/>
@@ -618,6 +678,9 @@ color: rgb(211, 215, 207);</string>
       <family>JetBrains Mono</family>
      </font>
     </property>
+    <property name="focusPolicy">
+     <enum>Qt::ClickFocus</enum>
+    </property>
     <property name="text">
      <string/>
     </property>
@@ -633,6 +696,9 @@ color: rgb(211, 215, 207);</string>
       <width>89</width>
       <height>71</height>
      </rect>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::ClickFocus</enum>
     </property>
     <property name="styleSheet">
      <string notr="true">background-color:rgb(0,128,0);
