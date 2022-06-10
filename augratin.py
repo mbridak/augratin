@@ -92,14 +92,14 @@ class MainWindow(QtWidgets.QMainWindow):
         }
         try:
             home = os.path.expanduser("~")
-            if os.path.exists(f"{home}/augratin.json"):
+            if os.path.exists(f"{home}/.augratin.json"):
                 with open(
-                    f"{home}/augratin.json", "rt", encoding="utf-8"
+                    f"{home}/.augratin.json", "rt", encoding="utf-8"
                 ) as file_descriptor:
                     self.settings = loads(file_descriptor.read())
             else:
                 with open(
-                    f"{home}/augratin.json", "wt", encoding="utf-8"
+                    f"{home}/.augratin.json", "wt", encoding="utf-8"
                 ) as file_descriptor:
                     file_descriptor.write(dumps(self.settings, indent=4))
                     logging.info("writing: %s", self.settings)
