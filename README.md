@@ -4,6 +4,26 @@
 
 Allows A POTA chaser to easily log contacts. Pulls latest POTA spots. Displays them in a compact interface. You can filter output to band and or mode. When you click on a spot, the needed information about the Activator and the park are populated on screen. If you have an instance of `flrig` running, your radio will automatically tune to the spotted frequency and change modes to match the spot. If you double click on a spot(s), spots from that activator will be highlighted green. You can use this keep track of who you have worked. Activators can be toggled off again by double clicking the activator a second time. 
 
+When you press the "Log it" button the adif information is appended to `POTA_Contacts.adi` in your home folder.
+
+## Early days
+
+This is the initial comit. Very early days.
+
+If you wish to play with it start by changing a line in the sourcecode.
+
+```    
+def __init__(self, parent=None):
+        """Initialize class variables"""
+        self.settings = {
+            "mycall": "K6GTE",
+            "mygrid": "Dm13at",
+            }
+```
+
+Put in your callsign and grid. This will get changed pretty darn soon to a local json file in your main directory. But 'till then... 
+
+
 ## Running from source
 
 First install the requirements.
