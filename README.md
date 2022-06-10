@@ -8,7 +8,7 @@ When you press the "Log it" button the adif information is appended to `POTA_Con
 
 ## Early days
 
-This is the initial comit. Very early days.
+This is the initial commit. Very early days.
 
 If you wish to play with it start by changing a line in the sourcecode.
 
