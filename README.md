@@ -2,7 +2,13 @@
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)  [![Python: 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)  [![Made With:PyQt5](https://img.shields.io/badge/Made%20with-PyQt5-red)](https://pypi.org/project/PyQt5/)
 
-Allows A POTA chaser to easily log contacts. Pulls latest POTA spots. Displays them in a compact interface. You can filter output to band and or mode. When you click on a spot, the needed information about the Activator and the park are populated on screen. If you have an instance of `flrig` running, your radio will automatically tune to the spotted frequency and change modes to match the spot. If you double click on a spot(s), spots from that activator will be highlighted green. You can use this keep track of who you have worked. Activators can be toggled off again by double clicking the activator a second time. 
+Allows A POTA chaser to easily log contacts. Pulls latest POTA spots. Displays them in a compact interface. 
+
+## Features
+* You can filter output to band and or mode.
+* Pulls in park and activator information.
+* Tunes your radio to the activator and sets the mode automatically. 
+* Double click spot to highlight an activator in the list.
 
 When you press the "Log it" button the adif information is appended to `POTA_Contacts.adi` in your home folder.
 
