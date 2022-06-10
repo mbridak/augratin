@@ -8,7 +8,8 @@ Allows A POTA chaser to easily log contacts. Pulls latest POTA spots. Displays t
 * You can filter output to band and or mode.
 * Pulls in park and activator information.
 * Tunes your radio to the activator and sets the mode automatically. 
-* Double click spot to highlight an activator in the list.
+* Double clicked spots adds Activator to a persistent watchlist.
+* Displays bearing to contact.
 
 When you press the "Log it" button the adif information is appended to `POTA_Contacts.adi` in your home folder.
 
