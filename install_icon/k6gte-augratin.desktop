@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=augratin
+StartupWMClass=augratin
+GenericName=K6GTE augratin
+Comment=Amateur Radio Communications
+Exec=augratin
+Icon=k6gte-augratin
+Terminal=false
+Type=Application
+Categories=HamRadio;
