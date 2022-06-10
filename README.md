@@ -10,19 +10,7 @@ When you press the "Log it" button the adif information is appended to `POTA_Con
 
 This is the initial commit. Very early days.
 
-If you wish to play with it start by changing a line in the sourcecode.
-
-```    
-def __init__(self, parent=None):
-        """Initialize class variables"""
-        self.settings = {
-            "mycall": "K6GTE",
-            "mygrid": "Dm13at",
-            }
-```
-
-Put in your callsign and grid. This will get changed pretty darn soon to a local json file in your main directory. But 'till then... 
-
+Updated code to save your callsign/grid to a json file in your home directory.
 
 ## Running from source
 
