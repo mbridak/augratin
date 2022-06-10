@@ -19,7 +19,7 @@ import os
 import logging
 from math import radians, sin, cos, atan2, sqrt, asin, pi
 from datetime import datetime, timezone
-from json import loads
+from json import loads, dumps
 import re
 import psutil
 from PyQt5 import QtCore, QtWidgets, uic
@@ -87,9 +87,24 @@ class MainWindow(QtWidgets.QMainWindow):
     def __init__(self, parent=None):
         """Initialize class variables"""
         self.settings = {
-            "mycall": "K6GTE",
-            "mygrid": "Dm13at",
-            }
+            "mycall": "",
+            "mygrid": "",
+        }
+        try:
+            home = os.path.expanduser("~")
+            if os.path.exists(f"{home}/augratin.json"):
+                with open(
+                    f"{home}/augratin.json", "rt", encoding="utf-8"
+                ) as file_descriptor:
+                    self.settings = loads(file_descriptor.read())
+            else:
+                with open(
+                    f"{home}/augratin.json", "wt", encoding="utf-8"
+                ) as file_descriptor:
+                    file_descriptor.write(dumps(self.settings, indent=4))
+                    logging.info("writing: %s", self.settings)
+        except IOError as exception:
+            logging.critical("%s", exception)
         self.isflrunning = self.checkflrun() or SERVER_ADDRESS != "localhost:12345"
         super().__init__(parent)
         uic.loadUi(self.relpath("dialog.ui"), self)
@@ -99,10 +114,32 @@ class MainWindow(QtWidgets.QMainWindow):
         self.listWidget.doubleClicked.connect(self.item_double_clicked)
         self.comboBox_mode.currentTextChanged.connect(self.getspots)
         self.comboBox_band.currentTextChanged.connect(self.getspots)
+        self.mycall_field.textEdited.connect(self.save_call_and_grid)
+        self.mygrid_field.textEdited.connect(self.save_call_and_grid)
         self.log_button.clicked.connect(self.log_contact)
         self.server = xmlrpc.client.ServerProxy(f"http://{SERVER_ADDRESS}")
         self.mycall_field.setText(self.settings["mycall"])
         self.mygrid_field.setText(self.settings["mygrid"])
+        if self.settings["mygrid"] == "":
+            self.mygrid_field.setStyleSheet("border: 1px solid red;")
+            self.mygrid_field.setFocus()
+        if self.settings["mycall"] == "":
+            self.mycall_field.setStyleSheet("border: 1px solid red;")
+            self.mycall_field.setFocus()
+
+    def save_call_and_grid(self):
+        """Saves users callsign and gridsquare to json file."""
+        self.settings["mycall"] = self.mycall_field.text().upper()
+        self.settings["mygrid"] = self.mygrid_field.text().upper()
+        try:
+            home = os.path.expanduser("~")
+            with open(
+                f"{home}/augratin.json", "wt", encoding="utf-8"
+            ) as file_descriptor:
+                file_descriptor.write(dumps(self.settings, indent=4))
+                logging.info("writing: %s", self.settings)
+        except IOError as exception:
+            logging.critical("%s", exception)
 
     def getpark(self, park):
         """Get park info from pota.app"""
@@ -250,7 +287,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def log_contact(self):
         """Log the contact"""
-        freq = str(int(self.freq_field.text())/1000000)
+        freq = str(int(self.freq_field.text()) / 1000000)
         qso = (
             f"<BAND:{len(self.band_field.text())}>{self.band_field.text()}\n"
             f"<CALL:{len(self.activator_call.text())}>{self.activator_call.text()}\n"
@@ -273,7 +310,9 @@ class MainWindow(QtWidgets.QMainWindow):
         )
         print(qso)
         home = os.path.expanduser("~")
-        with open(home + "/POTA_Contacts.adi", "a", encoding="utf-8") as file_descriptor:
+        with open(
+            home + "/POTA_Contacts.adi", "a", encoding="utf-8"
+        ) as file_descriptor:
             print(qso, file=file_descriptor)
 
     def showspots(self):
@@ -336,11 +375,11 @@ class MainWindow(QtWidgets.QMainWindow):
             line = item.text().split()
             self.lastclicked = item.text()
             self.activator_call.setText(line[1])
-            if '/' in line[1]:
+            if "/" in line[1]:
                 line[1] = line[1].split("/")[1]
             activator = self.getactivator(line[1])
             if activator:
-                self.activator_name.setText(activator['name'])
+                self.activator_name.setText(activator["name"])
             self.park_designator.setText(line[2])
             try:
                 self.mode_field.setText(line[4])
@@ -356,17 +395,21 @@ class MainWindow(QtWidgets.QMainWindow):
             self.band_field.setText(f"{self.getband(line[3])}M")
             park_info = self.getpark(line[2])
             if park_info:
-                self.park_name.setText(park_info['name'])
-                self.park_state.setText(park_info['locationName'])
-                self.park_grid.setText(park_info['grid6'])
-                self.park_section.setText(park_info['locationDesc'])
+                self.park_name.setText(park_info["name"])
+                self.park_state.setText(park_info["locationName"])
+                self.park_grid.setText(park_info["grid6"])
+                self.park_section.setText(park_info["locationDesc"])
                 self.comments.setPlainText(
                     f"POTA: {line[2]} {park_info['name']}, {park_info['locationName']}"
                 )
                 mygrid = self.mygrid_field.text()
                 if len(mygrid) > 3:
-                    self.park_distance.setText(str(self.distance(mygrid, park_info['grid6'])))
-                    self.park_direction.setText(str(self.bearing(mygrid, park_info['grid6'])))
+                    self.park_distance.setText(
+                        str(self.distance(mygrid, park_info["grid6"]))
+                    )
+                    self.park_direction.setText(
+                        str(self.bearing(mygrid, park_info["grid6"]))
+                    )
                 self.webView.load(
                     QUrl(
                         f"https://api.mapbox.com/styles/v1/mapbox/dark-v10/static/"
