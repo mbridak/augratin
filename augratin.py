@@ -134,7 +134,7 @@ class MainWindow(QtWidgets.QMainWindow):
         try:
             home = os.path.expanduser("~")
             with open(
-                f"{home}/augratin.json", "wt", encoding="utf-8"
+                f"{home}/.augratin.json", "wt", encoding="utf-8"
             ) as file_descriptor:
                 file_descriptor.write(dumps(self.settings, indent=4))
                 logging.info("writing: %s", self.settings)
@@ -284,6 +284,7 @@ class MainWindow(QtWidgets.QMainWindow):
             return
         self.spots = loads(request.text)
         self.showspots()
+        self.rst_sent.setFocus()
 
     def log_contact(self):
         """Log the contact"""
