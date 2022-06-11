@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1090</width>
+    <width>1051</width>
     <height>700</height>
    </rect>
   </property>
@@ -46,7 +46,7 @@ color: rgb(211, 215, 207);</string>
    <widget class="QLineEdit" name="activator_call">
     <property name="geometry">
      <rect>
-      <x>480</x>
+      <x>460</x>
       <y>70</y>
       <width>151</width>
       <height>25</height>
@@ -70,7 +70,7 @@ color: rgb(211, 215, 207);</string>
    <widget class="QLineEdit" name="park_designator">
     <property name="geometry">
      <rect>
-      <x>480</x>
+      <x>460</x>
       <y>110</y>
       <width>71</width>
       <height>25</height>
@@ -91,7 +91,7 @@ color: rgb(211, 215, 207);</string>
    <widget class="QPlainTextEdit" name="comments">
     <property name="geometry">
      <rect>
-      <x>480</x>
+      <x>460</x>
       <y>310</y>
       <width>451</width>
       <height>70</height>
@@ -112,7 +112,7 @@ color: rgb(211, 215, 207);</string>
    <widget class="QLineEdit" name="rst_sent">
     <property name="geometry">
      <rect>
-      <x>880</x>
+      <x>860</x>
       <y>270</y>
       <width>41</width>
       <height>25</height>
@@ -133,7 +133,7 @@ color: rgb(211, 215, 207);</string>
    <widget class="QLineEdit" name="rst_recieved">
     <property name="geometry">
      <rect>
-      <x>1010</x>
+      <x>990</x>
       <y>270</y>
       <width>41</width>
       <height>25</height>
@@ -157,7 +157,7 @@ color: rgb(211, 215, 207);</string>
    <widget class="QLineEdit" name="time_field">
     <property name="geometry">
      <rect>
-      <x>540</x>
+      <x>520</x>
       <y>230</y>
       <width>61</width>
       <height>25</height>
@@ -178,7 +178,7 @@ color: rgb(211, 215, 207);</string>
    <widget class="QLineEdit" name="date_field">
     <property name="geometry">
      <rect>
-      <x>690</x>
+      <x>670</x>
       <y>230</y>
       <width>81</width>
       <height>25</height>
@@ -199,9 +199,9 @@ color: rgb(211, 215, 207);</string>
    <widget class="QWebView" name="webView">
     <property name="geometry">
      <rect>
-      <x>490</x>
+      <x>460</x>
       <y>400</y>
-      <width>521</width>
+      <width>571</width>
       <height>271</height>
      </rect>
     </property>
@@ -215,9 +215,9 @@ color: rgb(211, 215, 207);</string>
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>50</y>
+      <y>60</y>
       <width>411</width>
-      <height>631</height>
+      <height>621</height>
      </rect>
     </property>
     <property name="font">
@@ -243,13 +243,16 @@ color: rgb(211, 215, 207);</string>
    <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
-      <x>0</x>
+      <x>10</x>
       <y>0</y>
-      <width>421</width>
-      <height>32</height>
+      <width>411</width>
+      <height>60</height>
      </rect>
     </property>
     <layout class="QHBoxLayout" name="horizontalLayout">
+     <property name="topMargin">
+      <number>0</number>
+     </property>
      <item>
       <spacer name="horizontalSpacer_2">
        <property name="font">
@@ -427,7 +430,7 @@ color: rgb(211, 215, 207);</string>
    <widget class="QLineEdit" name="activator_name">
     <property name="geometry">
      <rect>
-      <x>650</x>
+      <x>630</x>
       <y>70</y>
       <width>391</width>
       <height>25</height>
@@ -448,7 +451,7 @@ color: rgb(211, 215, 207);</string>
    <widget class="QLineEdit" name="park_name">
     <property name="geometry">
      <rect>
-      <x>570</x>
+      <x>550</x>
       <y>110</y>
       <width>471</width>
       <height>25</height>
@@ -469,7 +472,7 @@ color: rgb(211, 215, 207);</string>
    <widget class="QLineEdit" name="park_section">
     <property name="geometry">
      <rect>
-      <x>480</x>
+      <x>460</x>
       <y>150</y>
       <width>71</width>
       <height>25</height>
@@ -490,7 +493,7 @@ color: rgb(211, 215, 207);</string>
    <widget class="QLineEdit" name="park_state">
     <property name="geometry">
      <rect>
-      <x>570</x>
+      <x>550</x>
       <y>150</y>
       <width>471</width>
       <height>25</height>
@@ -511,7 +514,7 @@ color: rgb(211, 215, 207);</string>
    <widget class="QLineEdit" name="park_grid">
     <property name="geometry">
      <rect>
-      <x>482</x>
+      <x>462</x>
       <y>190</y>
       <width>71</width>
       <height>25</height>
@@ -535,7 +538,7 @@ color: rgb(211, 215, 207);</string>
    <widget class="QLineEdit" name="park_distance">
     <property name="geometry">
      <rect>
-      <x>570</x>
+      <x>550</x>
       <y>190</y>
       <width>81</width>
       <height>25</height>
@@ -559,7 +562,7 @@ color: rgb(211, 215, 207);</string>
    <widget class="QLineEdit" name="park_direction">
     <property name="geometry">
      <rect>
-      <x>710</x>
+      <x>690</x>
       <y>190</y>
       <width>41</width>
       <height>25</height>
@@ -583,7 +586,7 @@ color: rgb(211, 215, 207);</string>
    <widget class="QLineEdit" name="mode_field">
     <property name="geometry">
      <rect>
-      <x>660</x>
+      <x>640</x>
       <y>270</y>
       <width>61</width>
       <height>25</height>
@@ -604,7 +607,7 @@ color: rgb(211, 215, 207);</string>
    <widget class="QLineEdit" name="band_field">
     <property name="geometry">
      <rect>
-      <x>480</x>
+      <x>460</x>
       <y>270</y>
       <width>51</width>
       <height>25</height>
@@ -625,7 +628,7 @@ color: rgb(211, 215, 207);</string>
    <widget class="QLineEdit" name="freq_field">
     <property name="geometry">
      <rect>
-      <x>550</x>
+      <x>530</x>
       <y>270</y>
       <width>91</width>
       <height>25</height>
@@ -646,7 +649,7 @@ color: rgb(211, 215, 207);</string>
    <widget class="QLineEdit" name="mycall_field">
     <property name="geometry">
      <rect>
-      <x>580</x>
+      <x>560</x>
       <y>30</y>
       <width>113</width>
       <height>25</height>
@@ -667,7 +670,7 @@ color: rgb(211, 215, 207);</string>
    <widget class="QLineEdit" name="mygrid_field">
     <property name="geometry">
      <rect>
-      <x>800</x>
+      <x>780</x>
       <y>30</y>
       <width>61</width>
       <height>25</height>
@@ -691,7 +694,7 @@ color: rgb(211, 215, 207);</string>
    <widget class="QPushButton" name="log_button">
     <property name="geometry">
      <rect>
-      <x>960</x>
+      <x>940</x>
       <y>310</y>
       <width>89</width>
       <height>71</height>
@@ -711,7 +714,7 @@ color:rgb(255, 255, 255);</string>
    <widget class="QLabel" name="label">
     <property name="geometry">
      <rect>
-      <x>660</x>
+      <x>640</x>
       <y>190</y>
       <width>31</width>
       <height>25</height>
@@ -729,7 +732,7 @@ color:rgb(255, 255, 255);</string>
    <widget class="QLabel" name="label_2">
     <property name="geometry">
      <rect>
-      <x>760</x>
+      <x>740</x>
       <y>190</y>
       <width>41</width>
       <height>25</height>
@@ -747,7 +750,7 @@ color:rgb(255, 255, 255);</string>
    <widget class="QLabel" name="label_3">
     <property name="geometry">
      <rect>
-      <x>810</x>
+      <x>790</x>
       <y>270</y>
       <width>67</width>
       <height>25</height>
@@ -765,7 +768,7 @@ color:rgb(255, 255, 255);</string>
    <widget class="QLabel" name="label_4">
     <property name="geometry">
      <rect>
-      <x>940</x>
+      <x>920</x>
       <y>270</y>
       <width>67</width>
       <height>25</height>
@@ -783,7 +786,7 @@ color:rgb(255, 255, 255);</string>
    <widget class="QLabel" name="label_5">
     <property name="geometry">
      <rect>
-      <x>700</x>
+      <x>680</x>
       <y>30</y>
       <width>91</width>
       <height>25</height>
@@ -801,7 +804,7 @@ color:rgb(255, 255, 255);</string>
    <widget class="QLabel" name="label_6">
     <property name="geometry">
      <rect>
-      <x>480</x>
+      <x>460</x>
       <y>30</y>
       <width>91</width>
       <height>25</height>
@@ -819,7 +822,7 @@ color:rgb(255, 255, 255);</string>
    <widget class="QLabel" name="label_7">
     <property name="geometry">
      <rect>
-      <x>480</x>
+      <x>460</x>
       <y>230</y>
       <width>51</width>
       <height>25</height>
@@ -837,7 +840,7 @@ color:rgb(255, 255, 255);</string>
    <widget class="QLabel" name="label_8">
     <property name="geometry">
      <rect>
-      <x>630</x>
+      <x>610</x>
       <y>230</y>
       <width>51</width>
       <height>25</height>
