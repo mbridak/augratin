@@ -16,6 +16,7 @@ import argparse
 import xmlrpc.client
 import sys
 import os
+import io
 import logging
 from math import radians, sin, cos, atan2, sqrt, asin, pi
 from datetime import datetime, timezone
@@ -23,11 +24,12 @@ from json import loads, dumps
 import re
 import psutil
 from PyQt5 import QtCore, QtWidgets, uic
-from PyQt5.QtCore import QDir, QUrl
+from PyQt5.QtCore import QDir
 from PyQt5.QtGui import QFontDatabase, QBrush, QColor
 from PyQt5.QtWebKit import *
 from PyQt5.QtWebKitWidgets import *
 import requests
+import folium
 
 logging.basicConfig(level=logging.WARNING)
 
@@ -83,6 +85,7 @@ class MainWindow(QtWidgets.QMainWindow):
     lastclicked = ""
     workedlist = []
     spots = None
+    map = None
 
     def __init__(self, parent=None):
         """Initialize class variables"""
@@ -146,29 +149,11 @@ class MainWindow(QtWidgets.QMainWindow):
         except IOError as exception:
             logging.critical("%s", exception)
 
-    def getpark(self, park):
-        """Get park info from pota.app"""
+    @staticmethod
+    def getjson(url):
+        """Get json request"""
         try:
-            request = requests.get(f"{self.parkurl}{park}", timeout=15.0)
-            request.raise_for_status()
-        except requests.ConnectionError as err:
-            print(f"Network Error: {err}")
-            return None
-        except requests.exceptions.Timeout as err:
-            print(f"Timeout Error: {err}")
-            return None
-        except requests.exceptions.HTTPError as err:
-            print(f"HTTP Error: {err}")
-            return None
-        except requests.exceptions.RequestException as err:
-            print(f"Error: {err}")
-            return None
-        return loads(request.text)
-
-    def getactivator(self, activator):
-        """Get activator info from pota.app"""
-        try:
-            request = requests.get(f"{self.activatorurl}{activator}", timeout=15.0)
+            request = requests.get(url, timeout=15.0)
             request.raise_for_status()
         except requests.ConnectionError as err:
             print(f"Network Error: {err}")
@@ -272,22 +257,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def getspots(self):
         """Gets activator spots from pota.app"""
         self.time.setText(str(datetime.now(timezone.utc)).split()[1].split(".")[0][0:5])
-        try:
-            request = requests.get(self.potaurl, timeout=15.0)
-            request.raise_for_status()
-        except requests.ConnectionError as err:
-            self.listWidget.addItem(f"Network Error: {err}")
-            return
-        except requests.exceptions.Timeout as err:
-            self.listWidget.addItem(f"Timeout Error: {err}")
-            return
-        except requests.exceptions.HTTPError as err:
-            self.listWidget.addItem(f"HTTP Error: {err}")
-            return
-        except requests.exceptions.RequestException as err:
-            self.listWidget.addItem(f"Error: {err}")
-            return
-        self.spots = loads(request.text)
+        self.spots = self.getjson(self.potaurl)
         self.showspots()
         self.rst_sent.setFocus()
 
@@ -345,11 +315,6 @@ class MainWindow(QtWidgets.QMainWindow):
                         f"{i['frequency'].split('.')[0].rjust(6)} "
                         f"{i['mode']}"
                     )
-                    # item = QtWidgets.QListWidgetItem(spot)
-                    # pn = ""
-                    # if i["reference"] in self.parks:
-                    #     pn = f'{self.parks[i["reference"]][0]} {self.parks[i["reference"]][2]} {self.parks[i["reference"]][3]}'
-                    # item.setToolTip(f"{pn}")
 
                     self.listWidget.addItem(spot)
                     if spot[5:] == self.lastclicked[5:]:
@@ -383,7 +348,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.activator_call.setText(line[1])
             if "/" in line[1]:
                 line[1] = line[1].split("/")[1]
-            activator = self.getactivator(line[1])
+            activator = self.getjson(f"{self.activatorurl}{line[1]}")
             if activator:
                 self.activator_name.setText(activator["name"])
             self.park_designator.setText(line[2])
@@ -399,7 +364,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.mode_field.setText("")
             self.freq_field.setText(f"{line[3]}000")
             self.band_field.setText(f"{self.getband(line[3])}M")
-            park_info = self.getpark(line[2])
+            park_info = self.getjson(f"{self.parkurl}{line[2]}")
             if park_info:
                 self.park_name.setText(park_info["name"])
                 self.park_state.setText(park_info["locationName"])
@@ -416,15 +381,56 @@ class MainWindow(QtWidgets.QMainWindow):
                     self.park_direction.setText(
                         str(self.bearing(mygrid, park_info["grid6"]))
                     )
-                self.webView.load(
-                    QUrl(
-                        f"https://api.mapbox.com/styles/v1/mapbox/dark-v10/static/"
-                        f"pin-s-communications-tower+c2f410({park_info['longitude']},{park_info['latitude']})/"
-                        f"{park_info['longitude']},{park_info['latitude']},4,0/520x270?access_token="
-                        f"pk.eyJ1IjoibWJyaWRhayIsImEiOiJjazZ5ZjcxdWMwajVzM2xwYnZtMmVuZWphIn0."
-                        f"wIdxdwysUCJy0YsRFMyU1A"
-                    )
+
+                # self.map = folium.Map(
+                #     location=[park_info["latitude"], park_info["longitude"]],
+                #     zoom_start=5,
+                # )
+
+                # self.map = folium.Map(
+                #     location=[park_info["latitude"], park_info["longitude"]],
+                #     max_zoom=20,
+                #     tiles="https://basemap.nationalmap.gov/arcgis/rest/services/USGSTopo/MapServer/tile/{z}/{y}/{x}",
+                #     attr='Tiles courtesy of the <a href="https://usgs.gov/">U.S. Geological Survey</a>',
+                # )
+
+                # self.map = folium.Map(
+                #     location=[park_info["latitude"], park_info["longitude"]],
+                #     tiles="CartoDB dark_matter",
+                #     zoom_start=6,
+                # )
+
+                # self.map = folium.Map(
+                #     location=[park_info["latitude"], park_info["longitude"]],
+                #     tiles="https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}",
+                #     attr="Tiles &copy; Esri &mdash; National Geographic, Esri, DeLorme, NAVTEQ, UNEP-WCMC, USGS, NASA, ESA, METI, NRCAN, GEBCO, NOAA, iPC",
+                #     zoom_start=6,
+                #     max_zoom=16,
+                # )
+
+                # self.map = folium.Map(
+                #     location=[park_info["latitude"], park_info["longitude"]],
+                #     tiles="https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png",
+                #     attr='Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)',
+                #     zoom_start=6,
+                #     max_zoom=17,
+                # )
+
+                self.map = folium.Map(
+                    location=[park_info["latitude"], park_info["longitude"]],
+                    tiles="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+                    attr='Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)',
+                    zoom_start=6,
+                    max_zoom=19,
                 )
+
+                folium.Marker(
+                    [park_info["latitude"], park_info["longitude"]],
+                    popup=f"<i>{park_info['name']}</i>",
+                ).add_to(self.map)
+                data = io.BytesIO()
+                self.map.save(data, close_file=False)
+                self.webView.setHtml(data.getvalue().decode())
             if self.isflrunning:
                 freq = line[3]
                 combfreq = f"{freq}000"
