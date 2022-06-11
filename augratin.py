@@ -258,7 +258,8 @@ class MainWindow(QtWidgets.QMainWindow):
         """Gets activator spots from pota.app"""
         self.time.setText(str(datetime.now(timezone.utc)).split()[1].split(".")[0][0:5])
         self.spots = self.getjson(self.potaurl)
-        self.showspots()
+        if self.spots:
+            self.showspots()
         self.rst_sent.setFocus()
 
     def log_contact(self):
@@ -346,11 +347,18 @@ class MainWindow(QtWidgets.QMainWindow):
             line = item.text().split()
             self.lastclicked = item.text()
             self.activator_call.setText(line[1])
+
             if "/" in line[1]:
-                line[1] = line[1].split("/")[1]
-            activator = self.getjson(f"{self.activatorurl}{line[1]}")
+                basecall = max(line[1].split("/")[0], line[1].split("/")[1], key=len)
+            else:
+                basecall = line[1]
+
+            activator = self.getjson(f"{self.activatorurl}{basecall}")
+
             if activator:
                 self.activator_name.setText(activator["name"])
+            else:
+                self.activator_name.setText("")
             self.park_designator.setText(line[2])
             try:
                 self.mode_field.setText(line[4])
@@ -420,7 +428,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     location=[park_info["latitude"], park_info["longitude"]],
                     tiles="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
                     attr='Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)',
-                    zoom_start=6,
+                    zoom_start=5,
                     max_zoom=19,
                 )
 
