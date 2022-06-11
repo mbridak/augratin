@@ -29,6 +29,8 @@ Or if you're the Ubuntu/Debian type you can:
 
 `sudo apt install python3-pyqt5 python3-requests python3-psutil`
 
+If using a Raspberry PI, you probably need `python3-qtpy`
+
 Then, run the program from source.
 
 `python3 augratin.py`
