@@ -13,11 +13,7 @@ Allows A POTA chaser to easily log contacts. Pulls latest POTA spots. Displays t
 
 When you press the "Log it" button the adif information is appended to `POTA_Contacts.adi` in your home folder.
 
-## Early days
 
-This is the initial commit. Very early days.
-
-Updated code to save your callsign/grid to a json file in your home directory.
 
 ## Running from source
 
