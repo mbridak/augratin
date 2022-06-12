@@ -124,7 +124,7 @@ color: rgb(211, 215, 207);</string>
      </font>
     </property>
     <property name="focusPolicy">
-     <enum>Qt::TabFocus</enum>
+     <enum>Qt::StrongFocus</enum>
     </property>
     <property name="placeholderText">
      <string>599</string>
@@ -145,7 +145,7 @@ color: rgb(211, 215, 207);</string>
      </font>
     </property>
     <property name="focusPolicy">
-     <enum>Qt::TabFocus</enum>
+     <enum>Qt::StrongFocus</enum>
     </property>
     <property name="text">
      <string>599</string>
