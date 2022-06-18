@@ -254,11 +254,16 @@ class MainWindow(QtWidgets.QMainWindow):
         arrgh = 6372.8  # Radius of earth in kilometers.
         return cee * arrgh
 
+    def potasort(self, element):
+        """Sort list or dictionary items"""
+        return element["spotId"]
+
     def getspots(self):
         """Gets activator spots from pota.app"""
         self.time.setText(str(datetime.now(timezone.utc)).split()[1].split(".")[0][0:5])
         self.spots = self.getjson(self.potaurl)
         if self.spots:
+            self.spots.sort(key=self.potasort)
             self.showspots()
         self.rst_sent.setFocus()
 
