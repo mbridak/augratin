@@ -263,7 +263,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.time.setText(str(datetime.now(timezone.utc)).split()[1].split(".")[0][0:5])
         self.spots = self.getjson(self.potaurl)
         if self.spots:
-            self.spots.sort(key=self.potasort)
+            self.spots.sort(reverse=True, key=self.potasort)
             self.showspots()
         self.rst_sent.setFocus()
 
