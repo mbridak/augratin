@@ -4,6 +4,9 @@
 
 Allows A POTA chaser to easily log contacts. Pulls latest POTA spots. Displays them in a compact interface. 
 
+## Recent changes
+https://github.com/mbridak/augratin/compare/22.6.12...master
+
 ## Features
 * You can filter output to band and or mode.
 * Pulls in park and activator information.
