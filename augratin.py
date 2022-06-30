@@ -19,6 +19,7 @@ import os
 import io
 import logging
 from math import radians, sin, cos, atan2, sqrt, asin, pi
+from pathlib import Path
 from datetime import datetime, timezone
 from json import loads, dumps
 import re
@@ -288,10 +289,22 @@ class MainWindow(QtWidgets.QMainWindow):
             f"<QSO_DATE:{len(self.date_field.text())}>{self.date_field.text()}\n"
             f"<TIME_ON:{len(self.time_field.text())}>{self.time_field.text()}\n"
             f"<MY_GRIDSQUARE:{len(self.mygrid_field.text())}>{self.mygrid_field.text()}\n"
-            "<eor>\n\n"
+            "<EOR>\n"
         )
         print(qso)
         home = os.path.expanduser("~")
+        if not Path(home + "/POTA_Contacts.adi").exists():
+            with open(
+                home + "/POTA_Contacts.adi", "w", encoding="utf-8"
+            ) as file_descriptor:
+                header = (
+                    "augratin POTA logger\n"
+                    "<ADIF_VER:5>3.1.2\n"
+                    "<PROGRAMID:8>Cloudlog\n"
+                    "<PROGRAMVERSION:11>Version 1.7\n"
+                    "<EOH>\n"
+                )
+                print(header, file=file_descriptor)
         with open(
             home + "/POTA_Contacts.adi", "a", encoding="utf-8"
         ) as file_descriptor:
