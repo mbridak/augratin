@@ -148,10 +148,10 @@ color: rgb(211, 215, 207);</string>
      <enum>Qt::StrongFocus</enum>
     </property>
     <property name="text">
-     <string>599</string>
+     <string/>
     </property>
     <property name="placeholderText">
-     <string>RST RX</string>
+     <string>599</string>
     </property>
    </widget>
    <widget class="QLineEdit" name="time_field">
