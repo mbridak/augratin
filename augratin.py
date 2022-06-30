@@ -87,6 +87,7 @@ class MainWindow(QtWidgets.QMainWindow):
     workedlist = []
     spots = None
     map = None
+    loggable = False
 
     def __init__(self, parent=None):
         """Initialize class variables"""
@@ -269,7 +270,12 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def log_contact(self):
         """Log the contact"""
-        freq = str(int(self.freq_field.text()) / 1000000)
+        if self.loggable is False:
+            return
+        try:
+            freq = str(int(self.freq_field.text()) / 1000000)
+        except ValueError:
+            freq = "0"
         qso = (
             f"<BAND:{len(self.band_field.text())}>{self.band_field.text()}\n"
             f"<CALL:{len(self.activator_call.text())}>{self.activator_call.text()}\n"
@@ -309,6 +315,7 @@ class MainWindow(QtWidgets.QMainWindow):
         ) as file_descriptor:
             print(qso, file=file_descriptor)
         self.clear_fields()
+        self.loggable = False
 
     def showspots(self):
         """Display spots in a list"""
@@ -376,6 +383,7 @@ class MainWindow(QtWidgets.QMainWindow):
         """
 
         try:
+            self.loggable = True
             dateandtime = datetime.utcnow().isoformat(" ")[:19]
             self.time_field.setText(dateandtime.split(" ")[1].replace(":", ""))
             the_date_fields = dateandtime.split(" ")[0].split("-")
