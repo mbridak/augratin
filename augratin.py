@@ -305,8 +305,8 @@ class MainWindow(QtWidgets.QMainWindow):
                 header = (
                     "augratin POTA logger\n"
                     "<ADIF_VER:5>3.1.2\n"
-                    "<PROGRAMID:8>Cloudlog\n"
-                    "<PROGRAMVERSION:11>Version 1.7\n"
+                    "<PROGRAMID:8>AuGratin\n"
+                    "<PROGRAMVERSION:15>Version 22.6.30\n"
                     "<EOH>\n"
                 )
                 print(header, file=file_descriptor)
