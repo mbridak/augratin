@@ -266,7 +266,6 @@ class MainWindow(QtWidgets.QMainWindow):
         if self.spots:
             self.spots.sort(reverse=True, key=self.potasort)
             self.showspots()
-        self.rst_sent.setFocus()
 
     def log_contact(self):
         """Log the contact"""
@@ -309,6 +308,7 @@ class MainWindow(QtWidgets.QMainWindow):
             home + "/POTA_Contacts.adi", "a", encoding="utf-8"
         ) as file_descriptor:
             print(qso, file=file_descriptor)
+        self.clear_fields()
 
     def showspots(self):
         """Display spots in a list"""
@@ -348,6 +348,26 @@ class MainWindow(QtWidgets.QMainWindow):
                             QtCore.Qt.MatchFlag.MatchContains,  # pylint: disable=no-member
                         )
                         founditem[0].setBackground(QBrush(QColor.fromRgb(0, 128, 0)))
+
+
+    def clear_fields(self):
+        """Clear input fields and reset focus to RST TX."""
+        self.activator_call.setText("")
+        self.activator_name.setText("")
+        self.park_designator.setText("")
+        self.mode_field.setText("")
+        self.rst_sent.setText("")
+        self.rst_recieved.setText("")
+        self.freq_field.setText("")
+        self.band_field.setText("")
+        self.park_name.setText("")
+        self.park_state.setText("")
+        self.park_grid.setText("")
+        self.park_section.setText("")
+        self.comments.setPlainText("")
+        self.park_distance.setText("")
+        self.park_direction.setText("")
+        self.rst_sent.setFocus()
 
     def spotclicked(self):
         """
