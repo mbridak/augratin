@@ -31,8 +31,19 @@ from PyQt5.QtWebKit import *
 from PyQt5.QtWebKitWidgets import *
 import requests
 import folium
+from version import __version__
 
-logging.basicConfig(level=logging.WARNING)
+__author__ = 'Michael C. Bridak, K6GTE'
+__license__ = 'GNU General Public License v3.0'
+
+logging.basicConfig(
+            format=(
+                "[%(asctime)s] %(levelname)s %(module)s - "
+                "%(funcName)s Line %(lineno)d:\n%(message)s"
+            ),
+            datefmt="%H:%M:%S",
+            level=logging.WARNING,
+        )
 
 parser = argparse.ArgumentParser(
     description=(
@@ -53,6 +64,7 @@ if args.server:
     SERVER_ADDRESS = args.server
 else:
     SERVER_ADDRESS = "localhost:12345"
+logging.debug("Server Address: %s", SERVER_ADDRESS)
 
 
 def relpath(filename):
@@ -102,17 +114,19 @@ class MainWindow(QtWidgets.QMainWindow):
                     f"{home}/.augratin.json", "rt", encoding="utf-8"
                 ) as file_descriptor:
                     self.settings = loads(file_descriptor.read())
+                    logging.debug("reading: %s", self.settings)
             else:
                 with open(
                     f"{home}/.augratin.json", "wt", encoding="utf-8"
                 ) as file_descriptor:
                     file_descriptor.write(dumps(self.settings, indent=4))
-                    logging.info("writing: %s", self.settings)
+                    logging.debug("writing: %s", self.settings)
             if os.path.exists(f"{home}/.augratin_watched.json"):
                 with open(
                     f"{home}/.augratin_watched.json", "rt", encoding="utf-8"
                 ) as file_descriptor:
                     self.workedlist = loads(file_descriptor.read())
+                    logging.debug("reading workedlist: %s", self.settings)
         except IOError as exception:
             logging.critical("%s", exception)
         self.isflrunning = self.checkflrun() or SERVER_ADDRESS != "localhost:12345"
@@ -120,7 +134,7 @@ class MainWindow(QtWidgets.QMainWindow):
         uic.loadUi(self.relpath("dialog.ui"), self)
         self.listWidget.clicked.connect(self.spotclicked)
         if not self.isflrunning:
-            print("flrig is not running")
+            logging.debug("flrig not running")
         self.listWidget.doubleClicked.connect(self.item_double_clicked)
         self.comboBox_mode.currentTextChanged.connect(self.getspots)
         self.comboBox_band.currentTextChanged.connect(self.getspots)
@@ -158,16 +172,16 @@ class MainWindow(QtWidgets.QMainWindow):
             request = requests.get(url, timeout=15.0)
             request.raise_for_status()
         except requests.ConnectionError as err:
-            print(f"Network Error: {err}")
+            logging.debug("Network Error: %s", err)
             return None
         except requests.exceptions.Timeout as err:
-            print(f"Timeout Error: {err}")
+            logging.debug("Timeout Error: %s", err)
             return None
         except requests.exceptions.HTTPError as err:
-            print(f"HTTP Error: {err}")
+            logging.debug("HTTP Error: %s", err)
             return None
         except requests.exceptions.RequestException as err:
-            print(f"Error: {err}")
+            logging.debug("Error: %s", err)
             return None
         return loads(request.text)
 
@@ -276,6 +290,7 @@ class MainWindow(QtWidgets.QMainWindow):
             freq = str(int(self.freq_field.text()) / 1000000)
         except ValueError:
             freq = "0"
+            logging.debug("Invalid Frequency")
         qso = (
             f"<BAND:{len(self.band_field.text())}>{self.band_field.text()}\n"
             f"<CALL:{len(self.activator_call.text())}>{self.activator_call.text()}\n"
@@ -296,7 +311,7 @@ class MainWindow(QtWidgets.QMainWindow):
             f"<MY_GRIDSQUARE:{len(self.mygrid_field.text())}>{self.mygrid_field.text()}\n"
             "<EOR>\n"
         )
-        print(qso)
+        logging.debug("QSO: %s", qso)
         home = os.path.expanduser("~")
         if not Path(home + "/POTA_Contacts.adi").exists():
             with open(
@@ -572,6 +587,7 @@ if __name__ == "__main__":
     families = load_fonts_from_dir(os.fspath(font_dir))
     logging.info(families)
     window = MainWindow()
+    window.setWindowTitle(f"AuGratin v{__version__}")
     window.show()
     window.getspots()
     timer = QtCore.QTimer()
