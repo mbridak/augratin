@@ -4,13 +4,15 @@
 
 Allows A POTA chaser to easily log contacts. Pulls latest POTA spots. Displays them in a compact interface. 
 
+![screenshot](pic/screenshot.png)
+
 ## Recent changes
 https://github.com/mbridak/augratin/compare/22.6.12...master
 
 ## Features
-* You can filter output to band and or mode.
+* You can filter spots by band and or mode.
 * Pulls in park and activator information.
-* Tunes your radio to the activator and sets the mode automatically. 
+* Tunes your radio with flrig to the activator and sets the mode automatically. 
 * Double clicked spots adds Activator to a persistent watchlist.
 * Displays bearing to contact.
 
@@ -33,8 +35,6 @@ If using a Raspberry PI, you probably need `python3-qtpy`
 Then, run the program from source.
 
 `python3 augratin.py`
-
-![screenshot](pic/screenshot.png)
 
 ## Building a binary executable
 
