@@ -28,7 +28,7 @@ First install the requirements.
 
 Or if you're the Ubuntu/Debian type you can:
 
-`sudo apt install python3-pyqt5 python3-requests python3-psutil python3-folium`
+`sudo apt install python3-pyqt5 python3-pyqt5.qtwebkit python3-requests python3-psutil python3-folium`
 
 If using a Raspberry PI, you probably need `python3-qtpy`
 
