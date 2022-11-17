@@ -23,27 +23,27 @@ from pathlib import Path
 from datetime import datetime, timezone
 from json import loads, dumps
 import re
+
 import psutil
 from PyQt5 import QtCore, QtWidgets, uic
 from PyQt5.QtCore import QDir
 from PyQt5.QtGui import QFontDatabase, QBrush, QColor
-from PyQt5.QtWebKit import *
-from PyQt5.QtWebKitWidgets import *
+import PyQt5.QtWebEngineWidgets
 import requests
 import folium
 from version import __version__
 
-__author__ = 'Michael C. Bridak, K6GTE'
-__license__ = 'GNU General Public License v3.0'
+__author__ = "Michael C. Bridak, K6GTE"
+__license__ = "GNU General Public License v3.0"
 
 logging.basicConfig(
-            format=(
-                "[%(asctime)s] %(levelname)s %(module)s - "
-                "%(funcName)s Line %(lineno)d:\n%(message)s"
-            ),
-            datefmt="%H:%M:%S",
-            level=logging.WARNING,
-        )
+    format=(
+        "[%(asctime)s] %(levelname)s %(module)s - "
+        "%(funcName)s Line %(lineno)d:\n%(message)s"
+    ),
+    datefmt="%H:%M:%S",
+    level=logging.WARNING,
+)
 
 parser = argparse.ArgumentParser(
     description=(
@@ -371,7 +371,6 @@ class MainWindow(QtWidgets.QMainWindow):
                         )
                         founditem[0].setBackground(QBrush(QColor.fromRgb(0, 128, 0)))
 
-
     def clear_fields(self):
         """Clear input fields and reset focus to RST TX."""
         self.activator_call.setText("")
@@ -451,40 +450,6 @@ class MainWindow(QtWidgets.QMainWindow):
                         str(self.bearing(mygrid, park_info["grid6"]))
                     )
 
-                # self.map = folium.Map(
-                #     location=[park_info["latitude"], park_info["longitude"]],
-                #     zoom_start=5,
-                # )
-
-                # self.map = folium.Map(
-                #     location=[park_info["latitude"], park_info["longitude"]],
-                #     max_zoom=20,
-                #     tiles="https://basemap.nationalmap.gov/arcgis/rest/services/USGSTopo/MapServer/tile/{z}/{y}/{x}",
-                #     attr='Tiles courtesy of the <a href="https://usgs.gov/">U.S. Geological Survey</a>',
-                # )
-
-                # self.map = folium.Map(
-                #     location=[park_info["latitude"], park_info["longitude"]],
-                #     tiles="CartoDB dark_matter",
-                #     zoom_start=6,
-                # )
-
-                # self.map = folium.Map(
-                #     location=[park_info["latitude"], park_info["longitude"]],
-                #     tiles="https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}",
-                #     attr="Tiles &copy; Esri &mdash; National Geographic, Esri, DeLorme, NAVTEQ, UNEP-WCMC, USGS, NASA, ESA, METI, NRCAN, GEBCO, NOAA, iPC",
-                #     zoom_start=6,
-                #     max_zoom=16,
-                # )
-
-                # self.map = folium.Map(
-                #     location=[park_info["latitude"], park_info["longitude"]],
-                #     tiles="https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png",
-                #     attr='Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)',
-                #     zoom_start=6,
-                #     max_zoom=17,
-                # )
-
                 self.map = folium.Map(
                     location=[park_info["latitude"], park_info["longitude"]],
                     tiles="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
@@ -499,7 +464,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 ).add_to(self.map)
                 data = io.BytesIO()
                 self.map.save(data, close_file=False)
-                self.webView.setHtml(data.getvalue().decode())
+                self.webEngineView.setHtml(data.getvalue().decode())
             if self.isflrunning:
                 freq = line[3]
                 combfreq = f"{freq}000"

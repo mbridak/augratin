@@ -196,7 +196,7 @@ color: rgb(211, 215, 207);</string>
      <string>YYYYMMDD</string>
     </property>
    </widget>
-   <widget class="QWebView" name="webView">
+   <widget class="QWebEngineView" name="webEngineView">
     <property name="geometry">
      <rect>
       <x>460</x>
@@ -859,9 +859,9 @@ color:rgb(255, 255, 255);</string>
  </widget>
  <customwidgets>
   <customwidget>
-   <class>QWebView</class>
+   <class>QWebEngineView</class>
    <extends>QWidget</extends>
-   <header location="global">QtWebKitWidgets/QWebView</header>
+   <header location="global">QtWebEngineWidgets/QWebEngineView</header>
   </customwidget>
  </customwidgets>
  <resources/>
