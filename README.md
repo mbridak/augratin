@@ -7,7 +7,7 @@ Allows A POTA chaser to easily log contacts. Pulls latest POTA spots. Displays t
 ![screenshot](pic/screenshot.png)
 
 ## Recent changes
-https://github.com/mbridak/augratin/compare/22.6.12...master
+Changed backend from QtWebKit to QtWebEngine for the map display.
 
 ## Features
 * You can filter spots by band and or mode.
@@ -28,7 +28,7 @@ First install the requirements.
 
 Or if you're the Ubuntu/Debian type you can:
 
-`sudo apt install python3-pyqt5 python3-pyqt5.qtwebkit python3-requests python3-psutil python3-folium`
+`sudo apt install python3-pyqt5 python3-pyqt5.qtwebengine python3-requests python3-psutil python3-folium`
 
 If using a Raspberry PI, you probably need `python3-qtpy`
 
