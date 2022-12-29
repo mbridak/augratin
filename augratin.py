@@ -13,7 +13,6 @@
 # {"callsign": "K2EAG", "name": "Matt Brown", "qth": "Amherst, New York", "gravatar": "bf8377378b67b265cbb2be687b13a23a", "activator": {"activations": 72, "parks": 33, "qsos": 3724}, "attempts": {"activations": 80, "parks": 33, "qsos": 3724}, "hunter": {"parks": 237, "qsos": 334}, "awards": 16, "endorsements": 32}
 
 import argparse
-import xmlrpc.client
 import sys
 import os
 import io
@@ -32,18 +31,19 @@ import PyQt5.QtWebEngineWidgets
 import requests
 import folium
 from lib.version import __version__
+from lib.cat_interface import CAT
 
 __author__ = "Michael C. Bridak, K6GTE"
 __license__ = "GNU General Public License v3.0"
 
-logging.basicConfig(
-    format=(
-        "[%(asctime)s] %(levelname)s %(module)s - "
-        "%(funcName)s Line %(lineno)d:\n%(message)s"
-    ),
+logger = logging.getLogger("__name__")
+handler = logging.StreamHandler()
+formatter = logging.Formatter(
     datefmt="%H:%M:%S",
-    level=logging.WARNING,
+    fmt="[%(asctime)s] %(levelname)s %(module)s - %(funcName)s Line %(lineno)d:\n%(message)s",
 )
+handler.setFormatter(formatter)
+logger.addHandler(handler)
 
 parser = argparse.ArgumentParser(
     description=(
@@ -55,16 +55,51 @@ parser.add_argument(
     "-s",
     "--server",
     type=str,
-    help="Enter flrig server:port address. default is localhost:12345",
+    help="Force a server and port address. --server localhost:12345",
+)
+
+parser.add_argument(
+    "-r",
+    action=argparse.BooleanOptionalAction,
+    dest="rigctld",
+    help="Force use of rigctld",
+)
+
+parser.add_argument(
+    "-f",
+    action=argparse.BooleanOptionalAction,
+    dest="flrig",
+    help="Force use of flrig",
+)
+
+parser.add_argument(
+    "-d",
+    action=argparse.BooleanOptionalAction,
+    dest="debug",
+    help="Debug",
 )
 
 args = parser.parse_args()
 
+FORCED_INTERFACE = None
+SERVER_ADDRESS = None
+
+if args.rigctld:
+    FORCED_INTERFACE = "rigctld"
+    SERVER_ADDRESS = "localhost:4532"
+
+if args.flrig:
+    FORCED_INTERFACE = "flrig"
+    SERVER_ADDRESS = "localhost:12345"
+
 if args.server:
     SERVER_ADDRESS = args.server
-else:
-    SERVER_ADDRESS = "localhost:12345"
-logging.debug("Server Address: %s", SERVER_ADDRESS)
+
+if args.debug:
+    logger.setLevel(logging.DEBUG)
+
+logger.debug("Forces Interface: %s", FORCED_INTERFACE)
+logger.debug("Server Address: %s", SERVER_ADDRESS)
 
 
 def relpath(filename):
@@ -114,34 +149,53 @@ class MainWindow(QtWidgets.QMainWindow):
                     f"{home}/.augratin.json", "rt", encoding="utf-8"
                 ) as file_descriptor:
                     self.settings = loads(file_descriptor.read())
-                    logging.debug("reading: %s", self.settings)
+                    logger.debug("reading: %s", self.settings)
             else:
                 with open(
                     f"{home}/.augratin.json", "wt", encoding="utf-8"
                 ) as file_descriptor:
                     file_descriptor.write(dumps(self.settings, indent=4))
-                    logging.debug("writing: %s", self.settings)
+                    logger.debug("writing: %s", self.settings)
             if os.path.exists(f"{home}/.augratin_watched.json"):
                 with open(
                     f"{home}/.augratin_watched.json", "rt", encoding="utf-8"
                 ) as file_descriptor:
                     self.workedlist = loads(file_descriptor.read())
-                    logging.debug("reading workedlist: %s", self.settings)
+                    logger.debug("reading workedlist: %s", self.settings)
         except IOError as exception:
-            logging.critical("%s", exception)
-        self.isflrunning = self.checkflrun() or SERVER_ADDRESS != "localhost:12345"
+            logger.critical("%s", exception)
+
+        self.cat_control = None
+        local_flrig = self.check_process("flrig")
+        local_rigctld = self.check_process("rigctld")
+
+        if FORCED_INTERFACE:
+            address, port = SERVER_ADDRESS.split(":")
+            self.cat_control = CAT(FORCED_INTERFACE, address, int(port))
+
+        if self.cat_control is None:
+            if local_flrig:
+                if SERVER_ADDRESS:
+                    address, port = SERVER_ADDRESS.split(":")
+                else:
+                    address, port = "localhost", "12345"
+                self.cat_control = CAT("flrig", address, int(port))
+            if local_rigctld:
+                if SERVER_ADDRESS:
+                    address, port = SERVER_ADDRESS.split(":")
+                else:
+                    address, port = "localhost", "4532"
+                self.cat_control = CAT("rigctld", address, int(port))
+
         super().__init__(parent)
         uic.loadUi(self.relpath("dialog.ui"), self)
         self.listWidget.clicked.connect(self.spotclicked)
-        if not self.isflrunning:
-            logging.debug("flrig not running")
         self.listWidget.doubleClicked.connect(self.item_double_clicked)
         self.comboBox_mode.currentTextChanged.connect(self.getspots)
         self.comboBox_band.currentTextChanged.connect(self.getspots)
         self.mycall_field.textEdited.connect(self.save_call_and_grid)
         self.mygrid_field.textEdited.connect(self.save_call_and_grid)
         self.log_button.clicked.connect(self.log_contact)
-        self.server = xmlrpc.client.ServerProxy(f"http://{SERVER_ADDRESS}")
         self.mycall_field.setText(self.settings["mycall"])
         self.mygrid_field.setText(self.settings["mygrid"])
         if self.settings["mygrid"] == "":
@@ -161,9 +215,9 @@ class MainWindow(QtWidgets.QMainWindow):
                 f"{home}/.augratin.json", "wt", encoding="utf-8"
             ) as file_descriptor:
                 file_descriptor.write(dumps(self.settings, indent=4))
-                logging.info("writing: %s", self.settings)
+                logger.info("writing: %s", self.settings)
         except IOError as exception:
-            logging.critical("%s", exception)
+            logger.critical("%s", exception)
 
     @staticmethod
     def getjson(url):
@@ -172,16 +226,16 @@ class MainWindow(QtWidgets.QMainWindow):
             request = requests.get(url, timeout=15.0)
             request.raise_for_status()
         except requests.ConnectionError as err:
-            logging.debug("Network Error: %s", err)
+            logger.debug("Network Error: %s", err)
             return None
         except requests.exceptions.Timeout as err:
-            logging.debug("Timeout Error: %s", err)
+            logger.debug("Timeout Error: %s", err)
             return None
         except requests.exceptions.HTTPError as err:
-            logging.debug("HTTP Error: %s", err)
+            logger.debug("HTTP Error: %s", err)
             return None
         except requests.exceptions.RequestException as err:
-            logging.debug("Error: %s", err)
+            logger.debug("Error: %s", err)
             return None
         return loads(request.text)
 
@@ -290,7 +344,7 @@ class MainWindow(QtWidgets.QMainWindow):
             freq = str(int(self.freq_field.text()) / 1000000)
         except ValueError:
             freq = "0"
-            logging.debug("Invalid Frequency")
+            logger.debug("Invalid Frequency")
         qso = (
             f"<BAND:{len(self.band_field.text())}>{self.band_field.text()}\n"
             f"<CALL:{len(self.activator_call.text())}>{self.activator_call.text()}\n"
@@ -311,7 +365,7 @@ class MainWindow(QtWidgets.QMainWindow):
             f"<MY_GRIDSQUARE:{len(self.mygrid_field.text())}>{self.mygrid_field.text()}\n"
             "<EOR>\n"
         )
-        logging.debug("QSO: %s", qso)
+        logger.debug("QSO: %s", qso)
         home = os.path.expanduser("~")
         if not Path(home + "/POTA_Contacts.adi").exists():
             with open(
@@ -465,10 +519,11 @@ class MainWindow(QtWidgets.QMainWindow):
                 data = io.BytesIO()
                 self.map.save(data, close_file=False)
                 self.webEngineView.setHtml(data.getvalue().decode())
-            if self.isflrunning:
+            if self.cat_control is not None:
                 freq = line[3]
                 combfreq = f"{freq}000"
-                self.server.rig.set_frequency(float(combfreq))
+                self.cat_control.set_vfo(combfreq)
+                # self.server.rig.set_frequency(float(combfreq))
                 try:
                     mode = line[4].upper()
                     if mode == "SSB":
@@ -476,7 +531,8 @@ class MainWindow(QtWidgets.QMainWindow):
                             mode = "USB"
                         else:
                             mode = "LSB"
-                    self.server.rig.set_mode(mode)
+                    self.cat_control.set_mode(mode)
+                    # self.server.rig.set_mode(mode)
                 except IndexError:
                     pass
         except ConnectionRefusedError:
@@ -498,7 +554,7 @@ class MainWindow(QtWidgets.QMainWindow):
             ) as file_descriptor:
                 file_descriptor.write(dumps(self.workedlist))
         except IOError as exception:
-            logging.critical("%s", exception)
+            logger.critical("%s", exception)
 
     @staticmethod
     def getband(freq):
@@ -533,11 +589,10 @@ class MainWindow(QtWidgets.QMainWindow):
             return "0"
 
     @staticmethod
-    def checkflrun():
+    def check_process(name: str) -> bool:
         """checks to see if flrig is in the active process list"""
-        reg = "flrig"
         for proc in psutil.process_iter():
-            if bool(re.match(reg, proc.name().lower())):
+            if bool(re.match(name, proc.name().lower())):
                 return True
         return False
 
@@ -547,7 +602,7 @@ if __name__ == "__main__":
     app.setStyle("Fusion")
     font_dir = relpath("font")
     families = load_fonts_from_dir(os.fspath(font_dir))
-    logging.info(families)
+    logger.info(families)
     window = MainWindow()
     window.setWindowTitle(f"AuGratin v{__version__}")
     window.show()
