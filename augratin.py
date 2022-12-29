@@ -31,7 +31,7 @@ from PyQt5.QtGui import QFontDatabase, QBrush, QColor
 import PyQt5.QtWebEngineWidgets
 import requests
 import folium
-from version import __version__
+from lib.version import __version__
 
 __author__ = "Michael C. Bridak, K6GTE"
 __license__ = "GNU General Public License v3.0"
@@ -536,13 +536,10 @@ class MainWindow(QtWidgets.QMainWindow):
     def checkflrun():
         """checks to see if flrig is in the active process list"""
         reg = "flrig"
-        found = False
-
         for proc in psutil.process_iter():
-            if found is False:
-                if bool(re.match(reg, proc.name().lower())):
-                    found = True
-        return found
+            if bool(re.match(reg, proc.name().lower())):
+                return True
+        return False
 
 
 if __name__ == "__main__":
