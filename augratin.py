@@ -136,6 +136,7 @@ class MainWindow(QtWidgets.QMainWindow):
     spots = None
     map = None
     loggable = False
+    MAP_TILES ="OpenStreetMap"
 
     def __init__(self, parent=None):
         """Initialize class variables"""
@@ -208,7 +209,7 @@ class MainWindow(QtWidgets.QMainWindow):
         # start map centered on US.
         self.map = folium.Map(
             location=["39.8", "-98.5"],
-            tiles="cartodb dark_matter",
+            tiles=self.MAP_TILES,
             zoom_start=3,
             max_zoom=19,
         )
@@ -517,7 +518,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
                 self.map = folium.Map(
                     location=[park_info["latitude"], park_info["longitude"]],
-                    tiles="cartodb dark_matter",
+                    tiles=self.MAP_TILES,
                     zoom_start=5,
                     max_zoom=19,
                 )
