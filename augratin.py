@@ -27,7 +27,8 @@ import psutil
 from PyQt5 import QtCore, QtWidgets, uic
 from PyQt5.QtCore import QDir
 from PyQt5.QtGui import QFontDatabase, QBrush, QColor
-import PyQt5.QtWebEngineWidgets
+
+import PyQt5.QtWebEngineWidgets  # pylint: disable=unused-import
 import requests
 import folium
 from lib.version import __version__
@@ -204,6 +205,16 @@ class MainWindow(QtWidgets.QMainWindow):
         if self.settings["mycall"] == "":
             self.mycall_field.setStyleSheet("border: 1px solid red;")
             self.mycall_field.setFocus()
+        # start map centered on US.
+        self.map = folium.Map(
+            location=["39.8", "-98.5"],
+            tiles="cartodb dark_matter",
+            zoom_start=3,
+            max_zoom=19,
+        )
+        data = io.BytesIO()
+        self.map.save(data, close_file=False)
+        self.webEngineView.setHtml(data.getvalue().decode())
 
     def save_call_and_grid(self):
         """Saves users callsign and gridsquare to json file."""
@@ -446,7 +457,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def spotclicked(self):
         """
-        If flrig is running on this PC, tell it to tune to the spot freq and change mode.
+        If flrig/rigctld is running on this PC, tell it to tune to the spot freq and change mode.
         Otherwise die gracefully.
         """
 
@@ -506,12 +517,10 @@ class MainWindow(QtWidgets.QMainWindow):
 
                 self.map = folium.Map(
                     location=[park_info["latitude"], park_info["longitude"]],
-                    tiles="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-                    attr='Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)',
+                    tiles="cartodb dark_matter",
                     zoom_start=5,
                     max_zoom=19,
                 )
-
                 folium.Marker(
                     [park_info["latitude"], park_info["longitude"]],
                     popup=f"<i>{park_info['name']}</i>",
