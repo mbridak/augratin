@@ -2,22 +2,41 @@
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)  [![Python: 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)  [![Made With:PyQt5](https://img.shields.io/badge/Made%20with-PyQt5-red)](https://pypi.org/project/PyQt5/)
 
-Allows A POTA chaser to easily log contacts. Pulls latest POTA spots. Displays them in a compact interface.
+## Why AuGratin
 
-![screenshot](pic/screenshot.png)
+AuGratin is an extension to an earlier program called POTAto. And since it's made from POTAto, I called it AuGratin.
+
+## What is AuGratin
+
+To answer this you must know what [POTA](https://parksontheair.com) is.
+[POTA](https://parksontheair.com) is Parks On The Air.
+A year round activity of many amateur radio operators or HAMS.
+The Activator, will set up a radio station in a state/national park and make as many contacts as they can.
+Other Radio Amateurs also known as Hunters or Chasers, will seek out and try to contact as many Activators as they can.
+
+AuGratin allows A [POTA](https://parksontheair.com) Hunter to easily log contacts with Activators.
+It pulls latest [POTA](https://parksontheair.com) spots. Displays them in a compact interface.
+Once a spot is clicked on AuGratin will talk to either rigctld or flrig to change the radio to the correct
+frequency and mode. It will pre-populate All the fields needed for logging the contact.
+All contacts are stored in an ADIF file in your home directory,
+which you can them import into your normal logging program.
+
+![screenshot](https://github.com/mbridak/augratin/raw/master/pic/screenshot.png)
 
 ## Recent changes
 
-* You can use either flrig or rigctld for CAT control.
-* Changed backend from QtWebKit to QtWebEngine for the map display.
+- Changed map to dark mode.
+- Made window resizable.
+- You can use either flrig or rigctld for CAT control.
+- Changed backend from QtWebKit to QtWebEngine for the map display.
 
 ## Features
 
-* You can filter spots by band and or mode.
-* Pulls in park and activator information.
-* Tunes your radio with flrig to the activator and sets the mode automatically.
-* Double clicked spots adds Activator to a persistent watchlist.
-* Displays bearing to contact.
+- You can filter spots by band and or mode.
+- Pulls in park and activator information.
+- Tunes your radio with flrig to the activator and sets the mode automatically.
+- Double clicked spots adds Activator to a persistent watchlist.
+- Displays bearing to contact.
 
 When you press the "Log it" button the adif information is appended to `POTA_Contacts.adi` in your home folder.
 
