@@ -49,7 +49,7 @@ logger.addHandler(handler)
 parser = argparse.ArgumentParser(
     description=(
         "augratin helps chasers hunt POTA activators. "
-        "Find out more about POTA at https://pota.app"
+        "Find out more about POTA at https://parksontheair.com"
     )
 )
 parser.add_argument(
