@@ -1,5 +1,6 @@
 POTA_Contacts.adi
-build/*
-dist/*
+build
+dist
+augratin.egg-info
 __pycache__
 publish.sh
