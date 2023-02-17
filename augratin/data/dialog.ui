@@ -782,7 +782,7 @@ color:rgb(255, 255, 255);</string>
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_11">
           <item>
-           <widget class="QWebEngineView" name="webEngineView" native="true">
+           <widget class="QWebEngineView" name="mapview" native="true">
             <property name="url" stdset="0">
              <url>
               <string>about:blank</string>

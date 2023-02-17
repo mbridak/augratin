@@ -28,8 +28,11 @@ import psutil
 from PyQt5 import QtCore, QtWidgets, uic
 from PyQt5.QtCore import QDir
 from PyQt5.QtGui import QFontDatabase, QBrush, QColor
-
 import PyQt5.QtWebEngineWidgets  # pylint: disable=unused-import
+
+# from PyQt5.QtWebEngineWidgets import QWebEngineView
+
+
 import requests
 import folium
 
@@ -213,7 +216,7 @@ class MainWindow(QtWidgets.QMainWindow):
         )
         data = io.BytesIO()
         self.map.save(data, close_file=False)
-        self.webEngineView.setHtml(data.getvalue().decode())
+        self.mapview.setHtml(data.getvalue().decode())
 
     def save_call_and_grid(self):
         """Saves users callsign and gridsquare to json file."""
@@ -513,7 +516,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 ).add_to(self.map)
                 data = io.BytesIO()
                 self.map.save(data, close_file=False)
-                self.webEngineView.setHtml(data.getvalue().decode())
+                self.mapview.setHtml(data.getvalue().decode())
             if self.cat_control is not None:
                 freq = line[3]
                 combfreq = f"{freq}000"
@@ -592,6 +595,22 @@ class MainWindow(QtWidgets.QMainWindow):
         return False
 
 
+def install_icons():
+    os.system(
+        "xdg-icon-resource install --size 128 --context apps --mode user "
+        f"{WORKING_PATH}/data/k6gte-augratin-128.png k6gte-augratin"
+    )
+    os.system(
+        "xdg-icon-resource install --size 64 --context apps --mode user "
+        f"{WORKING_PATH}/data/k6gte-augratin-64.png k6gte-augratin"
+    )
+    os.system(
+        "xdg-icon-resource install --size 32 --context apps --mode user "
+        f"{WORKING_PATH}/data/k6gte-augratin-32.png k6gte-augratin"
+    )
+    os.system(f"xdg-desktop-menu install {WORKING_PATH}/data/k6gte-augratin.desktop")
+
+
 app = QtWidgets.QApplication(sys.argv)
 app.setStyle("Fusion")
 font_dir = WORKING_PATH + "/data"
@@ -606,6 +625,7 @@ timer.timeout.connect(window.getspots)
 
 
 def run():
+    install_icons()
     timer.start(30000)
     sys.exit(app.exec())
 
