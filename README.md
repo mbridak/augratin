@@ -48,7 +48,7 @@ pip install augratin
 
 - You can filter spots by band and or mode.
 - Pulls in park and activator information.
-- Tunes your radio with flrig to the activator and sets the mode automatically.
+- Tunes your radio with flrig or rigctld to the activator and sets the mode automatically.
 - Double clicked spots adds Activator to a persistent watchlist.
 - Displays bearing to contact.
 
