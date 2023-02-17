@@ -18,6 +18,7 @@ import os
 import io
 import logging
 from math import radians, sin, cos, atan2, sqrt, asin, pi
+import pkgutil
 from pathlib import Path
 from datetime import datetime, timezone
 from json import loads, dumps
@@ -27,15 +28,26 @@ import psutil
 from PyQt5 import QtCore, QtWidgets, uic
 from PyQt5.QtCore import QDir
 from PyQt5.QtGui import QFontDatabase, QBrush, QColor
-
 import PyQt5.QtWebEngineWidgets  # pylint: disable=unused-import
+
+# from PyQt5.QtWebEngineWidgets import QWebEngineView
+
+
 import requests
 import folium
-from lib.version import __version__
-from lib.cat_interface import CAT
+
+try:
+    from augratin.lib.version import __version__
+    from augratin.lib.cat_interface import CAT
+except ModuleNotFoundError:
+    from lib.version import __version__
+    from lib.cat_interface import CAT
 
 __author__ = "Michael C. Bridak, K6GTE"
 __license__ = "GNU General Public License v3.0"
+
+loader = pkgutil.get_loader("augratin")
+WORKING_PATH = os.path.dirname(loader.get_filename())
 
 logger = logging.getLogger("__name__")
 handler = logging.StreamHandler()
@@ -103,18 +115,6 @@ logger.debug("Forces Interface: %s", FORCED_INTERFACE)
 logger.debug("Server Address: %s", SERVER_ADDRESS)
 
 
-def relpath(filename):
-    """
-    Checks to see if program has been packaged with pyinstaller.
-    If so base dir is in a temp folder.
-    """
-    if getattr(sys, "frozen", False) and hasattr(sys, "_MEIPASS"):
-        base_path = getattr(sys, "_MEIPASS")
-    else:
-        base_path = os.path.abspath(".")
-    return os.path.join(base_path, filename)
-
-
 def load_fonts_from_dir(directory):
     """loads in font families"""
     font_families = set()
@@ -136,7 +136,7 @@ class MainWindow(QtWidgets.QMainWindow):
     spots = None
     map = None
     loggable = False
-    MAP_TILES ="OpenStreetMap"
+    MAP_TILES = "OpenStreetMap"
 
     def __init__(self, parent=None):
         """Initialize class variables"""
@@ -190,7 +190,8 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.cat_control = CAT("rigctld", address, int(port))
 
         super().__init__(parent)
-        uic.loadUi(self.relpath("dialog.ui"), self)
+        data_path = WORKING_PATH + "/data/dialog.ui"
+        uic.loadUi(data_path, self)
         self.listWidget.clicked.connect(self.spotclicked)
         self.listWidget.doubleClicked.connect(self.item_double_clicked)
         self.comboBox_mode.currentTextChanged.connect(self.getspots)
@@ -215,7 +216,7 @@ class MainWindow(QtWidgets.QMainWindow):
         )
         data = io.BytesIO()
         self.map.save(data, close_file=False)
-        self.webEngineView.setHtml(data.getvalue().decode())
+        self.mapview.setHtml(data.getvalue().decode())
 
     def save_call_and_grid(self):
         """Saves users callsign and gridsquare to json file."""
@@ -250,19 +251,6 @@ class MainWindow(QtWidgets.QMainWindow):
             logger.debug("Error: %s", err)
             return None
         return loads(request.text)
-
-    @staticmethod
-    def relpath(filename: str) -> str:
-        """
-        If the program is packaged with pyinstaller,
-        this is needed since all files will be in a temp
-        folder during execution.
-        """
-        if getattr(sys, "frozen", False) and hasattr(sys, "_MEIPASS"):
-            base_path = getattr(sys, "_MEIPASS")
-        else:
-            base_path = os.path.abspath(".")
-        return os.path.join(base_path, filename)
 
     @staticmethod
     def gridtolatlon(maiden):
@@ -528,7 +516,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 ).add_to(self.map)
                 data = io.BytesIO()
                 self.map.save(data, close_file=False)
-                self.webEngineView.setHtml(data.getvalue().decode())
+                self.mapview.setHtml(data.getvalue().decode())
             if self.cat_control is not None:
                 freq = line[3]
                 combfreq = f"{freq}000"
@@ -607,17 +595,40 @@ class MainWindow(QtWidgets.QMainWindow):
         return False
 
 
-if __name__ == "__main__":
-    app = QtWidgets.QApplication(sys.argv)
-    app.setStyle("Fusion")
-    font_dir = relpath("font")
-    families = load_fonts_from_dir(os.fspath(font_dir))
-    logger.info(families)
-    window = MainWindow()
-    window.setWindowTitle(f"AuGratin v{__version__}")
-    window.show()
-    window.getspots()
-    timer = QtCore.QTimer()
-    timer.timeout.connect(window.getspots)
+def install_icons():
+    os.system(
+        "xdg-icon-resource install --size 128 --context apps --mode user "
+        f"{WORKING_PATH}/data/k6gte-augratin-128.png k6gte-augratin"
+    )
+    os.system(
+        "xdg-icon-resource install --size 64 --context apps --mode user "
+        f"{WORKING_PATH}/data/k6gte-augratin-64.png k6gte-augratin"
+    )
+    os.system(
+        "xdg-icon-resource install --size 32 --context apps --mode user "
+        f"{WORKING_PATH}/data/k6gte-augratin-32.png k6gte-augratin"
+    )
+    os.system(f"xdg-desktop-menu install {WORKING_PATH}/data/k6gte-augratin.desktop")
+
+
+app = QtWidgets.QApplication(sys.argv)
+app.setStyle("Fusion")
+font_dir = WORKING_PATH + "/data"
+families = load_fonts_from_dir(os.fspath(font_dir))
+logger.info(families)
+window = MainWindow()
+window.setWindowTitle(f"AuGratin v{__version__}")
+window.show()
+window.getspots()
+timer = QtCore.QTimer()
+timer.timeout.connect(window.getspots)
+
+
+def run():
+    install_icons()
     timer.start(30000)
-    app.exec()
+    sys.exit(app.exec())
+
+
+if __name__ == "__main__":
+    run()
