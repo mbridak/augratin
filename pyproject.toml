@@ -16,7 +16,7 @@ dependencies = [
     "PyQtWebEngine",
     "requests",
     "psutil",
-    "foluim",
+    "folium",
 ]
 classifiers = [
     "Programming Language :: Python :: 3",
