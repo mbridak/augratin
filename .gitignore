@@ -2,3 +2,4 @@ POTA_Contacts.adi
 build/*
 dist/*
 __pycache__
+publish.sh
