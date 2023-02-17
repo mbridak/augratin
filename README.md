@@ -2,6 +2,17 @@
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)  [![Python: 3.8+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)  [![Made With:PyQt5](https://img.shields.io/badge/Made%20with-PyQt5-red)](https://pypi.org/project/PyQt5/)
 
+![logo](https://github.com/mbridak/augratin/raw/master/augratin/data/k6gte.augratin.svg)
+
+- [AuGratin](#augratin)
+  - [Why AuGratin](#why-augratin)
+  - [What is AuGratin](#what-is-augratin)
+  - [Recent changes](#recent-changes)
+  - [Installing AuGratin](#installing-augratin)
+  - [Features](#features)
+  - [What to do if your map is blank](#what-to-do-if-your-map-is-blank)
+  - [CAT control](#cat-control)
+
 ## Why AuGratin
 
 AuGratin is an extension to an earlier program called POTAto. And since it's made from POTAto, I called it AuGratin.
@@ -26,10 +37,12 @@ which you can them import into your normal logging program.
 ## Recent changes
 
 - [23-2-17] Repackaged for PyPi and pip install
-- Changed map to dark mode.
-- Made window resizable.
-- You can use either flrig or rigctld for CAT control.
-- Changed backend from QtWebKit to QtWebEngine for the map display.
+
+## Installing AuGratin
+
+```bash
+pip install augratin
+```
 
 ## Features
 
@@ -41,35 +54,24 @@ which you can them import into your normal logging program.
 
 When you press the "Log it" button the adif information is appended to `POTA_Contacts.adi` in your home folder.
 
-## Running from source
+## What to do if your map is blank
 
-First install the requirements.
+Not sure why, but the map may not work if you let pip install PyQt5 and PyQtWebEngine automatically. If your map is blank, try:
 
-`python3 -m pip3 install -r requirements.txt`
+```bash
+pip uninstall PyQt5
+Pip uninstall PyQtWebEngine
+```
 
-Or if you're the Ubuntu/Debian type you can:
+Then install them through your package manager.
 
-`sudo apt install python3-pyqt5 python3-pyqt5.qtwebengine python3-requests python3-psutil python3-folium`
+```bash
+#fedora
+sudo dnf install python3-qt5 python3-qt5-webengine
 
-If using a Raspberry PI, you probably need `python3-qtpy`
-
-Then, run the program from source.
-
-`python3 augratin.py`
-
-## Building a binary executable
-
-I've included a .spec file in case you wished to create your own binary from the source. To use it, first install pyinstaller.
-
-`python3 -m pip3 install pyinstaller`
-
-Then build the binary.
-
-`pyinstaller --clean linux.spec`
-
-Look in the newly created dist directory to find your binary.
-
-Or execute the install.sh shell script in the install_icon folder to copy the binary from the dist directory to your ~/.local/bin folder and install a launcher icon.
+#ubuntu
+sudo apt install python3-pyqt5 python3-pyqt5.qtwebengine
+```
 
 ## CAT control
 
