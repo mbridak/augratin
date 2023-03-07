@@ -199,12 +199,12 @@ class MainWindow(QtWidgets.QMainWindow):
         self.mycall_field.textEdited.connect(self.save_call_and_grid)
         self.mygrid_field.textEdited.connect(self.save_call_and_grid)
         self.log_button.clicked.connect(self.log_contact)
-        self.mycall_field.setText(self.settings["mycall"])
-        self.mygrid_field.setText(self.settings["mygrid"])
-        if self.settings["mygrid"] == "":
+        self.mycall_field.setText(self.settings.get("mycall", ""))
+        self.mygrid_field.setText(self.settings.get("mygrid", ""))
+        if self.settings.get("mygrid", "") == "":
             self.mygrid_field.setStyleSheet("border: 1px solid red;")
             self.mygrid_field.setFocus()
-        if self.settings["mycall"] == "":
+        if self.settings.get("mycall", "") == "":
             self.mycall_field.setStyleSheet("border: 1px solid red;")
             self.mycall_field.setFocus()
         # start map centered on US.
@@ -236,7 +236,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def getjson(url):
         """Get json request"""
         try:
-            request = requests.get(url, timeout=15.0)
+            request = requests.get(url, timeout=5.0)
             request.raise_for_status()
         except requests.ConnectionError as err:
             logger.debug("Network Error: %s", err)
@@ -375,7 +375,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     "augratin POTA logger\n"
                     "<ADIF_VER:5>3.1.2\n"
                     "<PROGRAMID:8>AuGratin\n"
-                    "<PROGRAMVERSION:15>Version 22.6.30\n"
+                    "<PROGRAMVERSION:14>Version 22.3.7\n"
                     "<EOH>\n"
                 )
                 print(header, file=file_descriptor)
@@ -521,7 +521,6 @@ class MainWindow(QtWidgets.QMainWindow):
                 freq = line[3]
                 combfreq = f"{freq}000"
                 self.cat_control.set_vfo(combfreq)
-                # self.server.rig.set_frequency(float(combfreq))
                 try:
                     mode = line[4].upper()
                     if mode == "SSB":
@@ -530,9 +529,10 @@ class MainWindow(QtWidgets.QMainWindow):
                         else:
                             mode = "LSB"
                     self.cat_control.set_mode(mode)
-                    # self.server.rig.set_mode(mode)
                 except IndexError:
                     pass
+            else:
+                self.recheck_cat()
         except ConnectionRefusedError:
             pass
 
@@ -588,14 +588,38 @@ class MainWindow(QtWidgets.QMainWindow):
 
     @staticmethod
     def check_process(name: str) -> bool:
-        """checks to see if flrig is in the active process list"""
+        """checks to see if program of name is in the active process list"""
         for proc in psutil.process_iter():
             if bool(re.match(name, proc.name().lower())):
                 return True
         return False
 
+    def recheck_cat(self):
+        """Renegotiate CAT control."""
+        local_flrig = self.check_process("flrig")
+        local_rigctld = self.check_process("rigctld")
+
+        if FORCED_INTERFACE:
+            address, port = SERVER_ADDRESS.split(":")
+            self.cat_control = CAT(FORCED_INTERFACE, address, int(port))
+
+        if self.cat_control is None:
+            if local_flrig:
+                if SERVER_ADDRESS:
+                    address, port = SERVER_ADDRESS.split(":")
+                else:
+                    address, port = "localhost", "12345"
+                self.cat_control = CAT("flrig", address, int(port))
+            if local_rigctld:
+                if SERVER_ADDRESS:
+                    address, port = SERVER_ADDRESS.split(":")
+                else:
+                    address, port = "localhost", "4532"
+                self.cat_control = CAT("rigctld", address, int(port))
+
 
 def install_icons():
+    """Install application icons"""
     os.system(
         "xdg-icon-resource install --size 128 --context apps --mode user "
         f"{WORKING_PATH}/data/k6gte-augratin-128.png k6gte-augratin"
@@ -625,6 +649,7 @@ timer.timeout.connect(window.getspots)
 
 
 def run():
+    """Start the app"""
     install_icons()
     timer.start(30000)
     sys.exit(app.exec())
