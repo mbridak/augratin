@@ -1,6 +1,7 @@
 # AuGratin
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)  [![Python: 3.8+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)  [![Made With:PyQt5](https://img.shields.io/badge/Made%20with-PyQt5-red)](https://pypi.org/project/PyQt5/)
+![PyPI - Downloads](https://img.shields.io/pypi/dm/augratin)
 
 ![logo](https://github.com/mbridak/augratin/raw/master/augratin/data/k6gte.augratin.svg)
 
@@ -36,6 +37,7 @@ which you can them import into your normal logging program.
 
 ## Recent changes
 
+- [23-3-7] Reduced network timeout for spot pulls from 15 to 5 seconds. Safer dictionary key access.
 - [23-2-17] Repackaged for PyPi and pip install
 
 ## Installing AuGratin
