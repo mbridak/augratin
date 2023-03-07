@@ -9,7 +9,7 @@
   - [Why AuGratin](#why-augratin)
   - [What is AuGratin](#what-is-augratin)
   - [Recent changes](#recent-changes)
-  - [Installing AuGratin](#installing-augratin)
+  - [Installing, Updating, Running, Removing](#installing-updating-running-removing)
   - [Features](#features)
   - [What to do if your map is blank](#what-to-do-if-your-map-is-blank)
   - [CAT control](#cat-control)
@@ -40,10 +40,20 @@ which you can them import into your normal logging program.
 - [23-3-7] Reduced network timeout for spot pulls from 15 to 5 seconds. Safer dictionary key access.
 - [23-2-17] Repackaged for PyPi and pip install
 
-## Installing AuGratin
+## Installing, Updating, Running, Removing
 
 ```bash
+# install
 pip install augratin
+
+# update
+pip install -U augratin
+
+# remove
+pip uninstall augratin
+
+# running
+augratin
 ```
 
 ## Features
