@@ -7,7 +7,7 @@
 
 - [AuGratin](#augratin)
   - [Why AuGratin](#why-augratin)
-  - [Why This Fork](#why-this-fork?)
+  - [Why This Fork](#why-this-fork)
   - [What is AuGratin](#what-is-augratin)
   - [Recent changes](#recent-changes)
   - [Installing, Updating, Running, Removing](#installing-updating-running-removing)
