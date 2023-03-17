@@ -18,6 +18,13 @@
 
 AuGratin is an extension to an earlier program called POTAto. And since it's made from POTAto, I called it AuGratin.
 
+## Why This Fork?
+
+2 objectives:
+   1. add Omnirig functionality
+   2. push OSO directly to LOG4OM vs. adi file
+Likely-hood of sucess? Not only am I a new HAM, I've never coded in Python before - wish me luck.    
+   
 ## What is AuGratin
 
 To answer this you must know what [POTA](https://parksontheair.com) is.
