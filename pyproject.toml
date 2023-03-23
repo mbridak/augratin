@@ -17,6 +17,7 @@ dependencies = [
     "requests",
     "psutil",
     "folium",
+    "pywin32",
 ]
 classifiers = [
     "Programming Language :: Python :: 3",

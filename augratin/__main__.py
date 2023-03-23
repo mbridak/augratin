@@ -39,9 +39,11 @@ import folium
 try:
     from augratin.lib.version import __version__
     from augratin.lib.cat_interface import CAT
+    from augratin.lib.omnirig_interface import OmniRigClient
 except ModuleNotFoundError:
     from lib.version import __version__
     from lib.cat_interface import CAT
+    from lib.omnirig_interface import OmniRigClient
 
 __author__ = "Michael C. Bridak, K6GTE"
 __license__ = "GNU General Public License v3.0"
@@ -598,6 +600,7 @@ class MainWindow(QtWidgets.QMainWindow):
         """Renegotiate CAT control."""
         local_flrig = self.check_process("flrig")
         local_rigctld = self.check_process("rigctld")
+        local_omnirig = self.check_process("omnirig")
 
         if FORCED_INTERFACE:
             address, port = SERVER_ADDRESS.split(":")
@@ -616,6 +619,8 @@ class MainWindow(QtWidgets.QMainWindow):
                 else:
                     address, port = "localhost", "4532"
                 self.cat_control = CAT("rigctld", address, int(port))
+            if local_omnirig:
+                self.cat_control = OmniRigClient("rig1")
 
 
 def install_icons():
