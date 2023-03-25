@@ -9,6 +9,16 @@ import logging
 
 class OmniRigClient:
     """OmniRig CAT control"""
+    """Standard Omnirig Params"""
+    PM_CW_U = 8388608
+    PM_CW_L = 16777216
+    PM_SSB_U = 33554432
+    PM_SSB_L = 67108864
+    PM_DIG_U = 134217728
+    PM_DIG_L = 268435456
+    PM_AM = 536870912
+    PM_FM = 1073741824
+
     def __init__(self, rig: int) -> None:
         """
         My CAT class using Omnirig
@@ -28,15 +38,6 @@ class OmniRigClient:
         A variable 'online' is set to True if no error was encountered,
         otherwise False.
         """
-        """Standard Omnirig Params"""
-        PM_CW_U =       8388608
-        PM_CW_L =       16777216
-        PM_SSB_U =      33554432
-        PM_SSB_L =      67108864
-        PM_DIG_U =      134217728
-        PM_DIG_L =      268435456
-        PM_AM =         536870912
-        PM_FM =         1073741824
 
         self.rig = rig
         self.online = False
@@ -66,9 +67,9 @@ class OmniRigClient:
         
         """Convert Mode to Omnirig param"""
         if mode == "USB":
-            omniMode = PM_SSB_U
+            omniMode = OmniRigClient.PM_SSB_U
         else:
-            omniMode = PM_SSB_L
+            omniMode = OmniRigClient.PM_SSB_L
 
         if self.rig == 1:
             self.omnirigObject.Rig1.mode = omniMode
