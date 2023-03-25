@@ -88,6 +88,13 @@ parser.add_argument(
 )
 
 parser.add_argument(
+    "-2",
+    action=argparse.BooleanOptionalAction,
+    dest="rig2",
+    help="Force use of rig2 in omnirig",
+)
+
+parser.add_argument(
     "-d",
     action=argparse.BooleanOptionalAction,
     dest="debug",
@@ -98,6 +105,7 @@ args = parser.parse_args()
 
 FORCED_INTERFACE = None
 SERVER_ADDRESS = None
+OMNI_RIGNUMBER = 1
 
 if args.rigctld:
     FORCED_INTERFACE = "rigctld"
@@ -109,6 +117,9 @@ if args.flrig:
 
 if args.server:
     SERVER_ADDRESS = args.server
+
+if args.rig2:
+    OMNI_RIGNUMBER = 2
 
 if args.debug:
     logger.setLevel(logging.DEBUG)
@@ -620,7 +631,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     address, port = "localhost", "4532"
                 self.cat_control = CAT("rigctld", address, int(port))
             if local_omnirig:
-                self.cat_control = OmniRigClient("rig1")
+                self.cat_control = OmniRigClient(OMNI_RIGNUMBER)
 
 
 def install_icons():
