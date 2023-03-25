@@ -11,14 +11,16 @@ requires-python = ">=3.9"
 authors = [
   { name="Michael Bridak", email="michael.bridak@gmail.com" },
 ]
+
 dependencies = [
     "PyQt5",
     "PyQtWebEngine",
     "requests",
     "psutil",
     "folium",
-    "pywin32",
+    "pywin32; os_name == 'nt'",
 ]
+
 classifiers = [
     "Programming Language :: Python :: 3",
     "Development Status :: 5 - Production/Stable",
