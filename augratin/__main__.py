@@ -39,11 +39,13 @@ import folium
 try:
     from augratin.lib.version import __version__
     from augratin.lib.cat_interface import CAT
-    from augratin.lib.omnirig_interface import OmniRigClient
+    if sys.platform == "win32":
+        from augratin.lib.omnirig_interface import OmniRigClient
 except ModuleNotFoundError:
     from lib.version import __version__
     from lib.cat_interface import CAT
-    from lib.omnirig_interface import OmniRigClient
+    if sys.platform == "win32":
+        from lib.omnirig_interface import OmniRigClient
 
 __author__ = "Michael C. Bridak, K6GTE"
 __license__ = "GNU General Public License v3.0"
