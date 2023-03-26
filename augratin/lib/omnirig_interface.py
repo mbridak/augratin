@@ -7,18 +7,12 @@ GPL V3
 import win32com.client as win32
 import logging
 
+if __name__ == "__main__":
+    print("I'm not the program you are looking for.")
+
 class OmniRigClient:
     """OmniRig CAT control"""
-    """Standard Omnirig Params"""
-    PM_CW_U = 8388608
-    PM_CW_L = 16777216
-    PM_SSB_U = 33554432
-    PM_SSB_L = 67108864
-    PM_DIG_U = 134217728
-    PM_DIG_L = 268435456
-    PM_AM = 536870912
-    PM_FM = 1073741824
-
+    
     def __init__(self, rig: int) -> None:
         """
         My CAT class using Omnirig
@@ -38,12 +32,9 @@ class OmniRigClient:
         A variable 'online' is set to True if no error was encountered,
         otherwise False.
         """
-
         self.rig = rig
         self.online = False
         self.omnirigObject = None
-
-    def __initialize_omnirig(self):
         try:
             self.omnirigObject = win32.gencache.EnsureDispatch('OmniRig.OmniRigX')
             logging.debug("Connected to Omnirig")
@@ -67,14 +58,14 @@ class OmniRigClient:
         
         """Convert Mode to Omnirig param"""
         if mode == "USB":
-            omniMode = OmniRigClient.PM_SSB_U
+            omniMode = 33554432 #USB Omnirig Param
         else:
-            omniMode = OmniRigClient.PM_SSB_L
+            omniMode = 67108864 #LSB Omnirig Param
 
         if self.rig == 1:
-            self.omnirigObject.Rig1.mode = omniMode
+            self.omnirigObject.Rig1.Mode = omniMode
             return True
         if self.rig == 2:
-            self.omnirigObject.Rig2.mode = omniMode
+            self.omnirigObject.Rig2.Mode = omniMode
             return True
         return False

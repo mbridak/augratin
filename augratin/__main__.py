@@ -183,24 +183,29 @@ class MainWindow(QtWidgets.QMainWindow):
         self.cat_control = None
         local_flrig = self.check_process("flrig")
         local_rigctld = self.check_process("rigctld")
+        local_omnirig = self.check_process("omnirig.exe")
+        
 
         if FORCED_INTERFACE:
             address, port = SERVER_ADDRESS.split(":")
             self.cat_control = CAT(FORCED_INTERFACE, address, int(port))
-
+        
         if self.cat_control is None:
             if local_flrig:
                 if SERVER_ADDRESS:
                     address, port = SERVER_ADDRESS.split(":")
                 else:
                     address, port = "localhost", "12345"
-                self.cat_control = CAT("flrig", address, int(port))
+                    self.cat_control = CAT("flrig", address, int(port))
             if local_rigctld:
                 if SERVER_ADDRESS:
                     address, port = SERVER_ADDRESS.split(":")
                 else:
                     address, port = "localhost", "4532"
-                self.cat_control = CAT("rigctld", address, int(port))
+                    self.cat_control = CAT("rigctld", address, int(port))   
+            if local_omnirig:
+                self.cat_control = OmniRigClient(OMNI_RIGNUMBER)
+                logging.debug("omnirig called")
 
         super().__init__(parent)
         data_path = WORKING_PATH + "/data/dialog.ui"
@@ -533,7 +538,6 @@ class MainWindow(QtWidgets.QMainWindow):
             if self.cat_control is not None:
                 freq = line[3]
                 combfreq = f"{freq}000"
-                self.cat_control.set_vfo(combfreq)
                 try:
                     mode = line[4].upper()
                     if mode == "SSB":
@@ -544,6 +548,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     self.cat_control.set_mode(mode)
                 except IndexError:
                     pass
+                self.cat_control.set_vfo(combfreq) #Set Mode first because my 991 offsets vfo based on mode.
             else:
                 self.recheck_cat()
         except ConnectionRefusedError:
@@ -604,6 +609,7 @@ class MainWindow(QtWidgets.QMainWindow):
         """checks to see if program of name is in the active process list"""
         for proc in psutil.process_iter():
             if bool(re.match(name, proc.name().lower())):
+                logger.debug("%s found!", name)
                 return True
         return False
 
@@ -611,11 +617,11 @@ class MainWindow(QtWidgets.QMainWindow):
         """Renegotiate CAT control."""
         local_flrig = self.check_process("flrig")
         local_rigctld = self.check_process("rigctld")
-        local_omnirig = self.check_process("omnirig")
+        local_omnirig = self.check_process("omnirig.exe")
 
         if FORCED_INTERFACE:
             address, port = SERVER_ADDRESS.split(":")
-            self.cat_control = CAT(FORCED_INTERFACE, address, int(port))
+            #self.cat_control = CAT(FORCED_INTERFACE, address, int(port))
 
         if self.cat_control is None:
             if local_flrig:
