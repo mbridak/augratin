@@ -56,7 +56,9 @@ class OmniRigClient:
         """Sets the raidos mode"""
         
         """Convert Mode to Omnirig param"""
-        if mode == "USB":
+        if mode == "CW":
+            omniMode = 8388608 #CW-U Omnirig Param
+        elif mode == "USB":
             omniMode = 33554432 #USB Omnirig Param
         else:
             omniMode = 67108864 #LSB Omnirig Param
