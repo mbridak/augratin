@@ -1,4 +1,4 @@
-# AuGratin
+# AuGratin+
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)  [![Python: 3.8+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)  [![Made With:PyQt5](https://img.shields.io/badge/Made%20with-PyQt5-red)](https://pypi.org/project/PyQt5/)
 ![PyPI - Downloads](https://img.shields.io/pypi/dm/augratin)
@@ -22,7 +22,7 @@ AuGratin is an extension to an earlier program called POTAto. And since it's mad
 ## Why This Fork?
 
 2 objectives:
-   1. add Omnirig functionality
+   1. add Omnirig functionality (COMPLETE!) 
    2. push QSO directly to LOG4OM vs. adi file
 Likely-hood of sucess? Not only am I a new HAM, I've never coded in Python before - wish me luck.    
    
@@ -95,14 +95,14 @@ sudo apt install python3-pyqt5 python3-pyqt5.qtwebengine
 
 ## CAT control
 
-If no command line options are given, the program will check if either flrig
-or rigctld are running on the computer. It will setup CAT control to which
-ever it finds first.
+If no command line options are given, the program will check if either flrig, rigctld or OmniRig are running on the computer. It will setup CAT control to whichever it finds first. 
 
 You can force it to use either with commandline options.
 
 `-r` will force rigctld with default host:port of localhost:4532.
 
 `-f` will force flrig with default host:port of localhost:12345.
+
+`-2` will force 'Rig2' with OmniRig.
 
 `-s SERVER:PORT` will specify a non-standard host and port.
