@@ -5,9 +5,8 @@
 
 ![logo](https://github.com/mbridak/augratin/raw/master/augratin/data/k6gte.augratin.svg)
 
-- [AuGratin](#augratin)
+- [AuGratin+](#augratin)
   - [Why AuGratin](#why-augratin)
-  - [Why This Fork](#why-this-fork)
   - [What is AuGratin](#what-is-augratin)
   - [Recent changes](#recent-changes)
   - [Installing, Updating, Running, Removing](#installing-updating-running-removing)
@@ -19,13 +18,6 @@
 
 AuGratin is an extension to an earlier program called POTAto. And since it's made from POTAto, I called it AuGratin.
 
-## Why This Fork?
-
-2 objectives:
-   1. add Omnirig functionality (COMPLETE!) 
-   2. push QSO directly to LOG4OM vs. adi file
-Likely-hood of sucess? Not only am I a new HAM, I've never coded in Python before - wish me luck.    
-   
 ## What is AuGratin
 
 To answer this you must know what [POTA](https://parksontheair.com) is.
@@ -45,6 +37,7 @@ which you can them import into your normal logging program.
 
 ## Recent changes
 
+- [23-3-28] Merged in changes from @barryshaffer to add support for Omnirig on windows.
 - [23-3-7] Reduced network timeout for spot pulls from 15 to 5 seconds. Safer dictionary key access.
 - [23-2-17] Repackaged for PyPi and pip install
 
