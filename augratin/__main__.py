@@ -550,7 +550,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     self.cat_control.set_mode(mode)
                 except IndexError:
                     pass
-                self.cat_control.set_vfo(combfreq) #Set Mode first because my 991 offsets vfo based on mode.
+                self.cat_control.set_vfo(combfreq) #Set Mode first because some rigs offset vfo based on mode.
             else:
                 self.recheck_cat()
         except ConnectionRefusedError:
@@ -623,7 +623,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         if FORCED_INTERFACE:
             address, port = SERVER_ADDRESS.split(":")
-            #self.cat_control = CAT(FORCED_INTERFACE, address, int(port))
+            self.cat_control = CAT(FORCED_INTERFACE, address, int(port))
 
         if self.cat_control is None:
             if local_flrig:
