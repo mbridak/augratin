@@ -37,7 +37,7 @@ which you can them import into your normal logging program.
 
 ## Recent changes
 
-- [23-3-28] Merged in changes from @barryshaffer to add support for Omnirig on windows.
+- [23-3-28] Merged in changes from @barryshaffer KK7JXG to add support for Omnirig on windows.
 - [23-3-7] Reduced network timeout for spot pulls from 15 to 5 seconds. Safer dictionary key access.
 - [23-2-17] Repackaged for PyPi and pip install
 
