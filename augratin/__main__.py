@@ -39,9 +39,13 @@ import folium
 try:
     from augratin.lib.version import __version__
     from augratin.lib.cat_interface import CAT
+    if sys.platform == "win32":
+        from augratin.lib.omnirig_interface import OmniRigClient
 except ModuleNotFoundError:
     from lib.version import __version__
     from lib.cat_interface import CAT
+    if sys.platform == "win32":
+        from lib.omnirig_interface import OmniRigClient
 
 __author__ = "Michael C. Bridak, K6GTE"
 __license__ = "GNU General Public License v3.0"
@@ -86,6 +90,13 @@ parser.add_argument(
 )
 
 parser.add_argument(
+    "-2",
+    action=argparse.BooleanOptionalAction,
+    dest="rig2",
+    help="Force use of rig2 in omnirig",
+)
+
+parser.add_argument(
     "-d",
     action=argparse.BooleanOptionalAction,
     dest="debug",
@@ -96,6 +107,7 @@ args = parser.parse_args()
 
 FORCED_INTERFACE = None
 SERVER_ADDRESS = None
+OMNI_RIGNUMBER = 1
 
 if args.rigctld:
     FORCED_INTERFACE = "rigctld"
@@ -107,6 +119,9 @@ if args.flrig:
 
 if args.server:
     SERVER_ADDRESS = args.server
+
+if args.rig2:
+    OMNI_RIGNUMBER = 2
 
 if args.debug:
     logger.setLevel(logging.DEBUG)
@@ -170,24 +185,29 @@ class MainWindow(QtWidgets.QMainWindow):
         self.cat_control = None
         local_flrig = self.check_process("flrig")
         local_rigctld = self.check_process("rigctld")
+        local_omnirig = self.check_process("omnirig.exe")
+        
 
         if FORCED_INTERFACE:
             address, port = SERVER_ADDRESS.split(":")
             self.cat_control = CAT(FORCED_INTERFACE, address, int(port))
-
+        
         if self.cat_control is None:
             if local_flrig:
                 if SERVER_ADDRESS:
                     address, port = SERVER_ADDRESS.split(":")
                 else:
                     address, port = "localhost", "12345"
-                self.cat_control = CAT("flrig", address, int(port))
+                    self.cat_control = CAT("flrig", address, int(port))
             if local_rigctld:
                 if SERVER_ADDRESS:
                     address, port = SERVER_ADDRESS.split(":")
                 else:
                     address, port = "localhost", "4532"
-                self.cat_control = CAT("rigctld", address, int(port))
+                    self.cat_control = CAT("rigctld", address, int(port))   
+            if local_omnirig:
+                self.cat_control = OmniRigClient(OMNI_RIGNUMBER)
+                logging.debug("omnirig called")
 
         super().__init__(parent)
         data_path = WORKING_PATH + "/data/dialog.ui"
@@ -520,7 +540,6 @@ class MainWindow(QtWidgets.QMainWindow):
             if self.cat_control is not None:
                 freq = line[3]
                 combfreq = f"{freq}000"
-                self.cat_control.set_vfo(combfreq)
                 try:
                     mode = line[4].upper()
                     if mode == "SSB":
@@ -531,6 +550,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     self.cat_control.set_mode(mode)
                 except IndexError:
                     pass
+                self.cat_control.set_vfo(combfreq) #Set Mode first because some rigs offset vfo based on mode.
             else:
                 self.recheck_cat()
         except ConnectionRefusedError:
@@ -591,6 +611,7 @@ class MainWindow(QtWidgets.QMainWindow):
         """checks to see if program of name is in the active process list"""
         for proc in psutil.process_iter():
             if bool(re.match(name, proc.name().lower())):
+                logger.debug("%s found!", name)
                 return True
         return False
 
@@ -598,6 +619,7 @@ class MainWindow(QtWidgets.QMainWindow):
         """Renegotiate CAT control."""
         local_flrig = self.check_process("flrig")
         local_rigctld = self.check_process("rigctld")
+        local_omnirig = self.check_process("omnirig.exe")
 
         if FORCED_INTERFACE:
             address, port = SERVER_ADDRESS.split(":")
@@ -616,6 +638,8 @@ class MainWindow(QtWidgets.QMainWindow):
                 else:
                     address, port = "localhost", "4532"
                 self.cat_control = CAT("rigctld", address, int(port))
+            if local_omnirig:
+                self.cat_control = OmniRigClient(OMNI_RIGNUMBER)
 
 
 def install_icons():
