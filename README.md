@@ -1,11 +1,11 @@
-# AuGratin+
+# AuGratin
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)  [![Python: 3.8+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)  [![Made With:PyQt5](https://img.shields.io/badge/Made%20with-PyQt5-red)](https://pypi.org/project/PyQt5/)
 ![PyPI - Downloads](https://img.shields.io/pypi/dm/augratin)
 
 ![logo](https://github.com/mbridak/augratin/raw/master/augratin/data/k6gte.augratin.svg)
 
-- [AuGratin+](#augratin)
+- [AuGratin](#augratin)
   - [Why AuGratin](#why-augratin)
   - [What is AuGratin](#what-is-augratin)
   - [Recent changes](#recent-changes)
@@ -88,7 +88,7 @@ sudo apt install python3-pyqt5 python3-pyqt5.qtwebengine
 
 ## CAT control
 
-If no command line options are given, the program will check if either flrig, rigctld or OmniRig are running on the computer. It will setup CAT control to whichever it finds first. 
+If no command line options are given, the program will check if either flrig, rigctld or OmniRig are running on the computer. It will setup CAT control to whichever it finds first.
 
 You can force it to use either with commandline options.
 
