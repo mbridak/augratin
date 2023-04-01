@@ -12,6 +12,7 @@
   - [Installing, Updating, Running, Removing](#installing-updating-running-removing)
   - [Features](#features)
   - [What to do if your map is blank](#what-to-do-if-your-map-is-blank)
+  - [What to do if omnirig fails to connect](## What to do if omnirig fails to connect)
   - [CAT control](#cat-control)
 
 ## Why AuGratin
@@ -85,6 +86,10 @@ sudo dnf install python3-qt5 python3-qt5-webengine
 #ubuntu
 sudo apt install python3-pyqt5 python3-pyqt5.qtwebengine
 ```
+
+## What to do if omnirig fails to connect
+
+On occation the win32 cache files can get corrupted preventing connection to omnirig. If omnirig was previously working but the continues to fail try erasing the cache files located here: C:\Users\*username*\AppData\Local\Temp\gen_py\*python version*
 
 ## CAT control
 
