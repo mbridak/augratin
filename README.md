@@ -89,7 +89,7 @@ sudo apt install python3-pyqt5 python3-pyqt5.qtwebengine
 
 ## What to do if omnirig fails to connect
 
-On occasion the win32 cache files can get corrupted preventing connection to omnirig. If omnirig was previously working but the continues to fail try erasing the cache files located here: C:\Users\*username*\AppData\Local\Temp\gen_py\*python version*
+On occasion the win32 cache files can get corrupted preventing connection to omnirig. If omnirig was previously working but the continues to fail try erasing the cache files located here: C:\Users\username*\AppData\Local\Temp\gen_py\python version*
 
 ## CAT control
 
