@@ -12,7 +12,7 @@
   - [Installing, Updating, Running, Removing](#installing-updating-running-removing)
   - [Features](#features)
   - [What to do if your map is blank](#what-to-do-if-your-map-is-blank)
-  - [What to do if omnirig fails to connect](## What to do if omnirig fails to connect)
+  - [What to do if omnirig fails to connect](#what-to-do-if-omnirig-fails-to-connect)
   - [CAT control](#cat-control)
 
 ## Why AuGratin
