@@ -14,6 +14,7 @@
 
 import argparse
 import sys
+import sqlite3
 import os
 import io
 import logging
@@ -141,8 +142,139 @@ def load_fonts_from_dir(directory):
     return font_families
 
 
+class Band:
+    """the band"""
+
+    bands = {
+        "160m": (1.8, 2),
+        "80m": (3.5, 4),
+        "60m": (5.102, 5.4065),
+        "40m": (7.0, 7.3),
+        "30m": (10.1, 10.15),
+        "20m": (14.0, 14.35),
+        "15m": (21.0, 21.45),
+        "10m": (28.0, 29.7),
+        "6m": (50.0, 54.0),
+        "4m": (70.0, 71.0),
+        "2m": (144.0, 148.0),
+    }
+
+    def __init__(self, band: str) -> None:
+        self.start, self.end = self.bands.get(band, (0.0, 1.0))
+        self.name = band
+
+
+class Database:
+    """spot database"""
+
+    def __init__(self) -> None:
+        self.db = sqlite3.connect(":memory:")
+        self.db.row_factory = self.row_factory
+        self.cursor = self.db.cursor()
+        sql_command = (
+            "create table spots("
+            "ts DATETIME NOT NULL, "
+            "callsign VARCHAR(15) NOT NULL, "
+            "freq DOUBLE NOT NULL, "
+            "band VARCHAR(6), "
+            "mode VARCHAR(6), "
+            "spotter VARCHAR(15) NOT NULL, "
+            "comment VARCHAR(45));"
+        )
+        self.cursor.execute(sql_command)
+        self.db.commit()
+
+    @staticmethod
+    def row_factory(cursor, row):
+        """
+        cursor.description:
+        (name, type_code, display_size,
+        internal_size, precision, scale, null_ok)
+        row: (value, value, ...)
+        """
+        return {
+            col[0]: row[idx]
+            for idx, col in enumerate(
+                cursor.description,
+            )
+        }
+
+    def addspot(self, spot):
+        """doc"""
+        try:
+            delete_call = (
+                f"delete from spots where callsign = '{spot.get('callsign')}';"
+            )
+            self.cursor.execute(delete_call)
+            self.db.commit()
+
+            pre = "INSERT INTO spots("
+            values = []
+            columns = ""
+            placeholders = ""
+            for key in spot.keys():
+                columns += f"{key},"
+                values.append(spot[key])
+                placeholders += "?,"
+            post = f") VALUES({placeholders[:-1]});"
+
+            sql = f"{pre}{columns[:-1]}{post}"
+            self.cursor.execute(sql, tuple(values))
+            self.db.commit()
+        except sqlite3.IntegrityError:
+            ...
+
+    def getspots(self) -> list:
+        """returns a list of dicts."""
+        try:
+            self.cursor.execute("select * from spots order by freq ASC;")
+            return self.cursor.fetchall()
+        except sqlite3.OperationalError:
+            return ()
+
+    def getspotsinband(self, start: float, end: float) -> list:
+        """ "return a list of dict where freq range is defined"""
+        self.cursor.execute(
+            f"select * from spots where freq >= {start} and freq <= {end} order by freq ASC;"
+        )
+        return self.cursor.fetchall()
+
+    def get_next_spot(self, current: float, limit: float) -> dict:
+        """ "return a list of dict where freq range is defined"""
+        self.cursor.execute(
+            f"select * from spots where freq > {current} and freq <= {limit} order by freq ASC;"
+        )
+        return self.cursor.fetchone()
+
+    def get_prev_spot(self, current: float, limit: float) -> dict:
+        """ "return a list of dict where freq range is defined"""
+        self.cursor.execute(
+            f"select * from spots where freq < {current} and freq >= {limit} order by freq DESC;"
+        )
+        return self.cursor.fetchone()
+
+    def delete_spots(self, minutes: int):
+        """doc"""
+        self.cursor.execute(
+            f"delete from spots where ts < datetime('now', '-{minutes} minutes');"
+        )
+
+
 class MainWindow(QtWidgets.QMainWindow):
     """The main window class"""
+
+    zoom = 5
+    currentBand = Band("20m")
+    txMark = []
+    rxMark = []
+    rx_freq = None
+    tx_freq = None
+    lineitemlist = []
+    textItemList = []
+    bandwidth = 0
+    bandwidth_mark = []
+    freq = 0.0
+    keepRXCenter = False
 
     potaurl = "https://api.pota.app/spot/activator"
     parkurl = "https://api.pota.app/park/"
@@ -213,8 +345,17 @@ class MainWindow(QtWidgets.QMainWindow):
         super().__init__(parent)
         data_path = WORKING_PATH + "/data/dialog.ui"
         uic.loadUi(data_path, self)
-        self.listWidget.clicked.connect(self.spotclicked)
-        self.listWidget.doubleClicked.connect(self.item_double_clicked)
+        # self.listWidget.clicked.connect(self.spotclicked)
+        # self.listWidget.doubleClicked.connect(self.item_double_clicked)
+
+        self.zoom_in_button.clicked.connect(self.dec_zoom)
+        self.zoom_out_button.clicked.connect(self.inc_zoom)
+        self.bandmap_scene = QtWidgets.QGraphicsScene()
+        self.bandmap_scene.clear()
+        self.bandmap_scene.setFocusOnTouch(False)
+        # self.bandmap_scene.selectionChanged.connect(self.spot_clicked)
+        self.spots = Database()
+
         self.comboBox_mode.currentTextChanged.connect(self.getspots)
         self.comboBox_band.currentTextChanged.connect(self.getspots)
         self.mycall_field.textEdited.connect(self.save_call_and_grid)
@@ -409,7 +550,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def showspots(self):
         """Display spots in a list"""
-        self.listWidget.clear()
+        # self.listWidget.clear()
         for i in self.spots:
             mode_selection = self.comboBox_mode.currentText()
             if mode_selection == "-FT*" and i["mode"][:2] == "FT":
@@ -432,19 +573,19 @@ class MainWindow(QtWidgets.QMainWindow):
                         f"{i['mode']}"
                     )
 
-                    self.listWidget.addItem(spot)
-                    if spot[5:] == self.lastclicked[5:]:
-                        founditem = self.listWidget.findItems(
-                            spot[5:],
-                            QtCore.Qt.MatchFlag.MatchContains,  # pylint: disable=no-member
-                        )
-                        founditem[0].setSelected(True)
-                    if i["activator"] in self.workedlist:
-                        founditem = self.listWidget.findItems(
-                            i["activator"],
-                            QtCore.Qt.MatchFlag.MatchContains,  # pylint: disable=no-member
-                        )
-                        founditem[0].setBackground(QBrush(QColor.fromRgb(0, 128, 0)))
+                    # self.listWidget.addItem(spot)
+                    # if spot[5:] == self.lastclicked[5:]:
+                    #     founditem = self.listWidget.findItems(
+                    #         spot[5:],
+                    #         QtCore.Qt.MatchFlag.MatchContains,  # pylint: disable=no-member
+                    #     )
+                    #     founditem[0].setSelected(True)
+                    # if i["activator"] in self.workedlist:
+                    #     founditem = self.listWidget.findItems(
+                    #         i["activator"],
+                    #         QtCore.Qt.MatchFlag.MatchContains,  # pylint: disable=no-member
+                    #     )
+                    #     founditem[0].setBackground(QBrush(QColor.fromRgb(0, 128, 0)))
 
     def clear_fields(self):
         """Clear input fields and reset focus to RST TX."""
@@ -465,12 +606,150 @@ class MainWindow(QtWidgets.QMainWindow):
         self.park_direction.setText("")
         self.rst_sent.setFocus()
 
+    def inc_zoom(self):
+        """doc"""
+        self.zoom += 1
+        self.zoom = min(self.zoom, 7)
+        self.update()
+        self.center_on_rxfreq()
+
+    def dec_zoom(self):
+        """doc"""
+        self.zoom -= 1
+        self.zoom = max(self.zoom, 1)
+        self.update()
+        self.center_on_rxfreq()
+
+    def drawTXRXMarks(self, step):
+        """doc"""
+        if self.rx_freq:
+            self.clear_freq_mark(self.bandwidth_mark)
+            self.clear_freq_mark(self.rxMark)
+            self.draw_bandwidth(
+                self.rx_freq, step, QtGui.QColor(30, 30, 180, 180), self.bandwidth_mark
+            )
+            self.drawfreqmark(
+                self.rx_freq, step, QtGui.QColor(30, 180, 30, 180), self.rxMark
+            )
+
+    def Freq2ScenePos(self, freq: float):
+        """doc"""
+        if freq < self.currentBand.start or freq > self.currentBand.end:
+            return QtCore.QPointF()
+        step, _digits = self.determine_step_digits()
+        ret = QtCore.QPointF(
+            0, ((freq - self.currentBand.start) / step) * PIXELSPERSTEP
+        )
+        return ret
+
+    def center_on_rxfreq(self):
+        """doc"""
+        freq_pos = self.Freq2ScenePos(self.rx_freq).y()
+        self.scrollArea.verticalScrollBar().setValue(
+            int(freq_pos - (self.height() / 2) + 80)
+        )
+
+    def drawfreqmark(self, freq, _step, color, currentPolygon):
+        """doc"""
+
+        self.clear_freq_mark(currentPolygon)
+        # do not show the freq mark if it is outside the bandmap
+        if freq < self.currentBand.start or freq > self.currentBand.end:
+            return
+
+        Yposition = self.Freq2ScenePos(freq).y()
+
+        poly = QtGui.QPolygonF()
+
+        poly.append(QtCore.QPointF(21, Yposition))
+        poly.append(QtCore.QPointF(10, Yposition - 7))
+        poly.append(QtCore.QPointF(10, Yposition + 7))
+        pen = QtGui.QPen()
+        brush = QtGui.QBrush(color)
+        currentPolygon.append(self.bandmap_scene.addPolygon(poly, pen, brush))
+
+    def draw_bandwidth(self, freq, _step, color, currentPolygon):
+        """bandwidth"""
+        logger.debug("%s", f"mark:{currentPolygon} f:{freq} b:{self.bandwidth}")
+        self.clear_freq_mark(currentPolygon)
+        if freq < self.currentBand.start or freq > self.currentBand.end:
+            return
+        if freq and self.bandwidth:
+            # color = QtGui.QColor(30, 30, 180)
+            bw_start = freq - ((self.bandwidth / 2) / 1000000)
+            bw_end = freq + ((self.bandwidth / 2) / 1000000)
+            logger.debug("%s", f"s:{bw_start} e:{bw_end}")
+            Yposition_neg = self.Freq2ScenePos(bw_start).y()
+            Yposition_pos = self.Freq2ScenePos(bw_end).y()
+            poly = QtGui.QPolygonF()
+            poly.append(QtCore.QPointF(15, Yposition_neg))
+            poly.append(QtCore.QPointF(20, Yposition_neg))
+            poly.append(QtCore.QPointF(20, Yposition_pos))
+            poly.append(QtCore.QPointF(15, Yposition_pos))
+            pen = QtGui.QPen()
+            brush = QtGui.QBrush(color)
+            currentPolygon.append(self.bandmap_scene.addPolygon(poly, pen, brush))
+
+    def determine_step_digits(self):
+        """doc"""
+        return_zoom = {
+            1: (0.0001, 4),
+            2: (0.00025, 4),
+            3: (0.0005, 4),
+            4: (0.001, 3),
+            5: (0.0025, 3),
+            6: (0.005, 3),
+            7: (0.01, 2),
+        }
+        step, digits = return_zoom.get(self.zoom, (0.0001, 4))
+
+        if self.currentBand.start >= 28.0 and self.currentBand.start < 420.0:
+            step = step * 10
+            return (step, digits)
+
+        if self.currentBand.start >= 420.0 and self.currentBand.start < 2300.0:
+            step = step * 100
+
+        return (step, digits)
+
+    def set_band(self, band: str, savePrevBandZoom: bool):
+        """doc"""
+        logger.debug("%s", f"{band} {savePrevBandZoom}")
+        if band != self.currentBand.name:
+            if savePrevBandZoom:
+                self.saveCurrentZoom()
+            self.currentBand = Band(band)
+            # self.zoom = self.savedZoom(band)
+            self.update()
+
+    def clear_all_callsign_from_scene(self):
+        """doc"""
+        for items in self.textItemList:
+            self.bandmap_scene.removeItem(items)
+        self.textItemList.clear()
+        for items in self.lineitemlist:
+            self.bandmap_scene.removeItem(items)
+        self.lineitemlist.clear()
+
+    def clear_freq_mark(self, currentPolygon):
+        """doc"""
+        if currentPolygon:
+            for mark in currentPolygon:
+                self.bandmap_scene.removeItem(mark)
+        currentPolygon.clear()
+
     def spotclicked(self):
         """
         If flrig/rigctld is running on this PC, tell it to tune to the spot freq and change mode.
         Otherwise die gracefully.
         """
+        # new stuff
+        items = self.bandmap_scene.selectedItems()
+        for item in items:
+            if item:
+                ...
 
+        # old stuff
         try:
             self.loggable = True
             dateandtime = datetime.utcnow().isoformat(" ")[:19]
