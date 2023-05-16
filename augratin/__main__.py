@@ -53,6 +53,8 @@ except ModuleNotFoundError:
 __author__ = "Michael C. Bridak, K6GTE"
 __license__ = "GNU General Public License v3.0"
 
+os.environ["QT_QPA_PLATFORMTHEME"] = "gnome"
+
 loader = pkgutil.get_loader("augratin")
 WORKING_PATH = os.path.dirname(loader.get_filename())
 
@@ -1052,7 +1054,7 @@ def install_icons():
 
 
 app = QtWidgets.QApplication(sys.argv)
-app.setStyle("Fusion")
+# app.setStyle("Fusion")
 font_dir = WORKING_PATH + "/data"
 families = load_fonts_from_dir(os.fspath(font_dir))
 logger.info(families)

@@ -25,11 +25,12 @@
   <property name="windowTitle">
    <string>K6GTE AuGratin</string>
   </property>
-  <property name="styleSheet">
-   <string notr="true">background-color:rgb(45,45,45);
-color: rgb(211, 215, 207);</string>
-  </property>
   <widget class="QWidget" name="centralwidget">
+   <property name="font">
+    <font>
+     <family>JetBrains Mono</family>
+    </font>
+   </property>
    <layout class="QVBoxLayout" name="verticalLayout_3">
     <item>
      <layout class="QHBoxLayout" name="horizontalLayout" stretch="2,0,3">
