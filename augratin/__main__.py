@@ -179,7 +179,7 @@ class Database:
             "frequency INTEGER NOT NULL, "
             "mode VARCHAR(6), "
             "reference VARCHAR(8), "
-            "parkName VARCHAR(50)"
+            "parkName VARCHAR(50), "
             "spotter VARCHAR(15) NOT NULL, "
             "comments VARCHAR(45), "
             "source VARCHAR(8), "
@@ -189,9 +189,9 @@ class Database:
             "grid4 VARCHAR(4), "
             "grid6 VARCHAR(6), "
             "latitude REAL, "
-            "longitude REAL"
-            "count INTEGER"
-            "expire INTEGER"
+            "longitude REAL, "
+            "count INTEGER, "
+            "expire INTEGER "
             ");"
         )
         self.cursor.execute(sql_command)
@@ -367,7 +367,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.bandmap_scene.clear()
         self.bandmap_scene.setFocusOnTouch(False)
         # self.bandmap_scene.selectionChanged.connect(self.spot_clicked)
-        self.spots = Database()
+        self.spotdb = Database()
 
         self.comboBox_mode.currentTextChanged.connect(self.getspots)
         self.comboBox_band.currentTextChanged.connect(self.getspots)
@@ -508,8 +508,11 @@ class MainWindow(QtWidgets.QMainWindow):
         self.time.setText(str(datetime.now(timezone.utc)).split()[1].split(".")[0][0:5])
         self.spots = self.getjson(self.potaurl)
         if self.spots:
-            self.spots.sort(reverse=True, key=self.potasort)
-            self.showspots()
+            for spot in self.spots:
+                self.spotdb.addspot(spot)
+            # self.spots.sort(reverse=True, key=self.potasort)
+            # self.showspots()
+        print(f"The DB: \n{self.spotdb.getspots()}")
 
     def log_contact(self):
         """Log the contact"""
@@ -564,7 +567,6 @@ class MainWindow(QtWidgets.QMainWindow):
     def showspots(self):
         """Display spots in a list"""
         # self.listWidget.clear()
-        print(f"{self.spots}")
         for i in self.spots:
             mode_selection = self.comboBox_mode.currentText()
             if mode_selection == "-FT*" and i["mode"][:2] == "FT":
