@@ -63,10 +63,11 @@ augratin
 
 ## Features
 
-- You can filter spots by band and or mode.
+- Shows spots on a band map
+- You can filter spots by mode.
 - Pulls in park and activator information.
-- Tunes your radio with flrig or rigctld to the activator and sets the mode automatically.
-- Double clicked spots adds Activator to a persistent watchlist.
+- Clicked spots, tune your radio with flrig, rigctld or OmniRig to the activator and sets the mode automatically.
+- ~~Double clicked spots adds Activator to a persistent watchlist.~~
 - Displays bearing to contact.
 
 When you press the "Log it" button the adif information is appended to `POTA_Contacts.adi` in your home folder.
@@ -77,7 +78,7 @@ Not sure why, but the map may not work if you let pip install PyQt5 and PyQtWebE
 
 ```bash
 pip uninstall PyQt5
-Pip uninstall PyQtWebEngine
+pip uninstall PyQtWebEngine
 ```
 
 Then install them through your package manager.
