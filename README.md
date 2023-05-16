@@ -5,10 +5,7 @@
 
 ![logo](https://github.com/mbridak/augratin/raw/master/augratin/data/k6gte.augratin.svg)
 
-# Development Branch, Everything here is broken
-
 - [AuGratin](#augratin)
-- [Development Branch, Everything here is broken](#development-branch-everything-here-is-broken)
   - [Why AuGratin](#why-augratin)
   - [What is AuGratin](#what-is-augratin)
   - [Recent changes](#recent-changes)
