@@ -676,7 +676,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.clear_all_callsign_from_scene()
         self.spot_aging()
         step, _digits = self.determine_step_digits()
-
+        mode_selection = self.comboBox_mode.currentText()
         result = self.spotdb.getspotsinband(
             self.currentBand.start, self.currentBand.end
         )
@@ -684,46 +684,53 @@ class MainWindow(QtWidgets.QMainWindow):
         if result:
             min_y = 0.0
             for items in result:
-                # lookup = cty_lookup(items.get("callsign"))
-                # if lookup:
-                #     for a in lookup.items():
-                #         entity = a[1].get("entity", "")
-                freq_y = (
-                    (items.get("frequency") - self.currentBand.start) / step
-                ) * PIXELSPERSTEP
-                text_y = max(min_y + 5, freq_y)
-                self.lineitemlist.append(
-                    self.bandmap_scene.addLine(
-                        22, freq_y, 55, text_y, QtGui.QPen(QtGui.QColor(192, 192, 192))
+                if mode_selection == "-FT*" and items["mode"][:2] == "FT":
+                    continue
+                if (
+                    mode_selection == "All"
+                    or mode_selection == "-FT*"
+                    or items["mode"] == mode_selection
+                ):
+                    freq_y = (
+                        (items.get("frequency") - self.currentBand.start) / step
+                    ) * PIXELSPERSTEP
+                    text_y = max(min_y + 5, freq_y)
+                    self.lineitemlist.append(
+                        self.bandmap_scene.addLine(
+                            22,
+                            freq_y,
+                            55,
+                            text_y,
+                            QtGui.QPen(QtGui.QColor(192, 192, 192)),
+                        )
                     )
-                )
-                text = self.bandmap_scene.addText(
-                    items.get("activator")
-                    + " @ "
-                    + items.get("reference")
-                    + " "
-                    + items.get("mode")
-                    + " "
-                    + items.get("spotTime").split("T")[1][:-3]
-                )
-                text.document().setDocumentMargin(0)
-                text.setPos(60, text_y - (text.boundingRect().height() / 2))
-                text.setFlags(
-                    QtWidgets.QGraphicsItem.ItemIsFocusable
-                    | QtWidgets.QGraphicsItem.ItemIsSelectable
-                    | text.flags()
-                )
-                text.setProperty("freq", items.get("frequency"))
-                text.setProperty("spotId", items.get("spotId"))
-                text.setProperty("mode", items.get("mode"))
-                text.setToolTip(items.get("comments"))
+                    text = self.bandmap_scene.addText(
+                        items.get("activator")
+                        + " @ "
+                        + items.get("reference")
+                        + " "
+                        + items.get("mode")
+                        + " "
+                        + items.get("spotTime").split("T")[1][:-3]
+                    )
+                    text.document().setDocumentMargin(0)
+                    text.setPos(60, text_y - (text.boundingRect().height() / 2))
+                    text.setFlags(
+                        QtWidgets.QGraphicsItem.ItemIsFocusable
+                        | QtWidgets.QGraphicsItem.ItemIsSelectable
+                        | text.flags()
+                    )
+                    text.setProperty("freq", items.get("frequency"))
+                    text.setProperty("spotId", items.get("spotId"))
+                    text.setProperty("mode", items.get("mode"))
+                    text.setToolTip(items.get("comments"))
 
-                min_y = text_y + text.boundingRect().height() / 2
+                    min_y = text_y + text.boundingRect().height() / 2
 
-                # textColor = Data::statusToColor(lower.value().status,
-                # qApp->palette().color(QPalette::Text));
-                # text->setDefaultTextColor(textColor);
-                self.textItemList.append(text)
+                    # textColor = Data::statusToColor(lower.value().status,
+                    # qApp->palette().color(QPalette::Text));
+                    # text->setDefaultTextColor(textColor);
+                    self.textItemList.append(text)
 
     def clear_fields(self):
         """Clear input fields and reset focus to RST TX."""
@@ -893,14 +900,14 @@ class MainWindow(QtWidgets.QMainWindow):
         selected = selected_items[0]
         if selected:
             spotId = selected.property("spotId")
-            # spotfreq = selected.property("freq")
+            spotfreq = int(selected.property("freq") * 1000000)
             # spotmode = selected.property("mode")
+            print(spotfreq)
 
         # old stuff
         try:
             spot = self.spotdb.getspot_byid(spotId)
             item = f"xxx {spot.get('activator')} {spot.get('reference')} {int(spot.get('frequency')*1000)} {spot.get('mode')}"
-            print(item)
             self.loggable = True
             dateandtime = datetime.utcnow().isoformat(" ")[:19]
             self.time_field.setText(dateandtime.split(" ")[1].replace(":", ""))
@@ -933,7 +940,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     self.rst_recieved.setText("59")
             except IndexError:
                 self.mode_field.setText("")
-            self.freq_field.setText(f"{line[3]}000")
+            self.freq_field.setText(f"{spotfreq}")
             self.band_field.setText(f"{self.getband(line[3])}M")
             park_info = self.getjson(f"{self.parkurl}{line[2]}")
             if park_info:
@@ -967,12 +974,11 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.map.save(data, close_file=False)
                 self.mapview.setHtml(data.getvalue().decode())
             if self.cat_control is not None:
-                freq = line[3]
-                combfreq = f"{freq}000"
+                combfreq = f"{spotfreq}"
                 try:
                     mode = line[4].upper()
                     if mode == "SSB":
-                        if int(combfreq) > 10000000:
+                        if spotfreq > 10000000:
                             mode = "USB"
                         else:
                             mode = "LSB"
