@@ -28,10 +28,10 @@ Other Radio Amateurs also known as Hunters or Chasers, will seek out and try to 
 
 AuGratin allows A [POTA](https://parksontheair.com) Hunter to easily log contacts with Activators.
 It pulls latest [POTA](https://parksontheair.com) spots. Displays them in a compact interface.
-Once a spot is clicked on AuGratin will talk to either rigctld or flrig to change the radio to the correct
+Once a spot is clicked on AuGratin will talk to either rigctld, flrig, or OmniRig to change the radio to the correct
 frequency and mode. It will pre-populate All the fields needed for logging the contact.
 All contacts are stored in an ADIF file in your home directory,
-which you can them import into your normal logging program.
+which you can then import into your normal logging program.
 
 ![screenshot](https://github.com/mbridak/augratin/raw/master/pic/screenshot.png)
 
