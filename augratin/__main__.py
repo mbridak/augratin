@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """AuGratin helps chasers hunt POTA activators. Find out more about POTA at https://pota.app"""
 
+# pylint: disable=unused-import, c-extension-no-member, no-member, invalid-name, too-many-lines
 # pylint: disable=no-name-in-module
-# pylint: disable=c-extension-no-member
 # pylint: disable=wildcard-import
 # pylint: disable=line-too-long
 
@@ -26,7 +26,7 @@ from json import loads, dumps
 import re
 
 import psutil
-from PyQt5 import QtCore, QtWidgets, uic
+from PyQt5 import QtCore, QtWidgets, QtGui, uic
 from PyQt5.QtCore import QDir
 from PyQt5.QtGui import QFontDatabase, QBrush, QColor
 import PyQt5.QtWebEngineWidgets  # pylint: disable=unused-import
@@ -108,6 +108,8 @@ parser.add_argument(
 
 args = parser.parse_args()
 
+PIXELSPERSTEP = 10
+
 FORCED_INTERFACE = None
 SERVER_ADDRESS = None
 OMNI_RIGNUMBER = 1
@@ -176,7 +178,7 @@ class Database:
             "spotId INTEGER NOT NULL,"
             "spotTime DATETIME NOT NULL, "
             "activator VARCHAR(15) NOT NULL, "
-            "frequency INTEGER NOT NULL, "
+            "frequency REAL NOT NULL, "
             "mode VARCHAR(6), "
             "reference VARCHAR(8), "
             "parkName VARCHAR(50), "
@@ -288,6 +290,8 @@ class MainWindow(QtWidgets.QMainWindow):
     bandwidth_mark = []
     freq = 0.0
     keepRXCenter = False
+    something = None
+    agetime = None
 
     potaurl = "https://api.pota.app/spot/activator"
     parkurl = "https://api.pota.app/park/"
@@ -499,9 +503,9 @@ class MainWindow(QtWidgets.QMainWindow):
         arrgh = 6372.8  # Radius of earth in kilometers.
         return cee * arrgh
 
-    def potasort(self, element):
-        """Sort list or dictionary items"""
-        return element["spotId"]
+    # def potasort(self, element):
+    #     """Sort list or dictionary items"""
+    #     return element["spotId"]
 
     def getspots(self):
         """Gets activator spots from pota.app"""
@@ -509,10 +513,11 @@ class MainWindow(QtWidgets.QMainWindow):
         self.spots = self.getjson(self.potaurl)
         if self.spots:
             for spot in self.spots:
+                spot["frequency"] = float(spot.get("frequency")) / 1000
                 self.spotdb.addspot(spot)
             # self.spots.sort(reverse=True, key=self.potasort)
             # self.showspots()
-        print(f"The DB: \n{self.spotdb.getspots()}")
+            self.update()
 
     def log_contact(self):
         """Log the contact"""
@@ -603,6 +608,99 @@ class MainWindow(QtWidgets.QMainWindow):
                     #     )
                     #     founditem[0].setBackground(QBrush(QColor.fromRgb(0, 128, 0)))
 
+    def update(self):
+        """doc"""
+        # self.update_timer.setInterval(UPDATE_INTERVAL)
+        self.clear_all_callsign_from_scene()
+        self.clear_freq_mark(self.rxMark)
+        self.clear_freq_mark(self.txMark)
+        self.clear_freq_mark(self.bandwidth_mark)
+        self.bandmap_scene.clear()
+
+        step, _digits = self.determine_step_digits()
+        steps = int(round((self.currentBand.end - self.currentBand.start) / step))
+        self.graphicsView.setFixedSize(330, steps * PIXELSPERSTEP + 30)
+        self.graphicsView.setScene(self.bandmap_scene)
+        for i in range(steps):  # Draw tickmarks
+            length = 10
+            if i % 5 == 0:
+                length = 15
+            self.bandmap_scene.addLine(
+                10,
+                i * PIXELSPERSTEP,
+                length + 10,
+                i * PIXELSPERSTEP,
+                QtGui.QPen(QtGui.QColor(192, 192, 192)),
+            )
+            if i % 5 == 0:  # Add Frequency
+                freq = self.currentBand.start + step * i
+                text = f"{freq:.3f}"
+                self.something = self.bandmap_scene.addText(text)
+                self.something.setPos(
+                    -(self.something.boundingRect().width()) + 10,
+                    i * PIXELSPERSTEP - (self.something.boundingRect().height() / 2),
+                )
+
+        freq = self.currentBand.end + step * steps
+        endFreqDigits = f"{freq:.3f}"
+        self.bandmap_scene.setSceneRect(
+            160 - (len(endFreqDigits) * PIXELSPERSTEP), 0, 0, steps * PIXELSPERSTEP + 20
+        )
+
+        self.drawTXRXMarks(step)
+        self.update_stations()
+
+    def update_stations(self):
+        """doc"""
+        # self.update_timer.setInterval(UPDATE_INTERVAL)
+        self.clear_all_callsign_from_scene()
+        self.spot_aging()
+        step, _digits = self.determine_step_digits()
+
+        result = self.spotdb.getspotsinband(
+            self.currentBand.start, self.currentBand.end
+        )
+        # entity = ""
+        if result:
+            min_y = 0.0
+            for items in result:
+                # lookup = cty_lookup(items.get("callsign"))
+                # if lookup:
+                #     for a in lookup.items():
+                #         entity = a[1].get("entity", "")
+                freq_y = (
+                    (items.get("frequency") - self.currentBand.start) / step
+                ) * PIXELSPERSTEP
+                text_y = max(min_y + 5, freq_y)
+                self.lineitemlist.append(
+                    self.bandmap_scene.addLine(
+                        22, freq_y, 55, text_y, QtGui.QPen(QtGui.QColor(192, 192, 192))
+                    )
+                )
+                text = self.bandmap_scene.addText(
+                    items.get("activator")
+                    + " @ "
+                    + items.get("reference")
+                    + " "
+                    + items.get("spotTime").split("T")[1][:-3]
+                )
+                text.document().setDocumentMargin(0)
+                text.setPos(60, text_y - (text.boundingRect().height() / 2))
+                text.setFlags(
+                    QtWidgets.QGraphicsItem.ItemIsFocusable
+                    | QtWidgets.QGraphicsItem.ItemIsSelectable
+                    | text.flags()
+                )
+                text.setProperty("freq", items.get("frequency"))
+                text.setToolTip(items.get("comments"))
+
+                min_y = text_y + text.boundingRect().height() / 2
+
+                # textColor = Data::statusToColor(lower.value().status,
+                # qApp->palette().color(QPalette::Text));
+                # text->setDefaultTextColor(textColor);
+                self.textItemList.append(text)
+
     def clear_fields(self):
         """Clear input fields and reset focus to RST TX."""
         self.activator_call.setText("")
@@ -621,6 +719,11 @@ class MainWindow(QtWidgets.QMainWindow):
         self.park_distance.setText("")
         self.park_direction.setText("")
         self.rst_sent.setFocus()
+
+    def spot_aging(self):
+        """doc"""
+        if self.agetime:
+            self.spots.delete_spots(self.agetime)
 
     def inc_zoom(self):
         """doc"""
