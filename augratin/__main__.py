@@ -268,6 +268,11 @@ class Database:
         )
         return self.cursor.fetchone()
 
+    def getspot_byid(self, spot_id: int) -> dict:
+        """ "return dict of spot with the matching spotId"""
+        self.cursor.execute(f"select * from spots where spotId = {spot_id};")
+        return self.cursor.fetchone()
+
     def delete_spots(self, minutes: int):
         """doc"""
         self.cursor.execute(
@@ -370,7 +375,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.bandmap_scene = QtWidgets.QGraphicsScene()
         self.bandmap_scene.clear()
         self.bandmap_scene.setFocusOnTouch(False)
-        # self.bandmap_scene.selectionChanged.connect(self.spot_clicked)
+        self.bandmap_scene.selectionChanged.connect(self.spotclicked)
         self.spotdb = Database()
 
         self.comboBox_mode.currentTextChanged.connect(self.getspots)
@@ -396,6 +401,21 @@ class MainWindow(QtWidgets.QMainWindow):
         data = io.BytesIO()
         self.map.save(data, close_file=False)
         self.mapview.setHtml(data.getvalue().decode())
+
+    def poll_radio(self):
+        """Get Freq and Mode changes"""
+        if self.cat_control:
+            newfreq = float(self.cat_control.get_vfo()) / 1000000
+            # newmode = self.cat_control.get_mode()
+            newbw = int(self.cat_control.get_bw())
+            if self.rx_freq != newfreq:
+                self.rx_freq = newfreq
+                step, _ = self.determine_step_digits()
+                self.drawTXRXMarks(step)
+            if self.bandwidth != newbw:
+                self.bandwidth = newbw
+                step, _ = self.determine_step_digits()
+                self.drawTXRXMarks(step)
 
     def save_call_and_grid(self):
         """Saves users callsign and gridsquare to json file."""
@@ -682,6 +702,8 @@ class MainWindow(QtWidgets.QMainWindow):
                     + " @ "
                     + items.get("reference")
                     + " "
+                    + items.get("mode")
+                    + " "
                     + items.get("spotTime").split("T")[1][:-3]
                 )
                 text.document().setDocumentMargin(0)
@@ -692,6 +714,8 @@ class MainWindow(QtWidgets.QMainWindow):
                     | text.flags()
                 )
                 text.setProperty("freq", items.get("frequency"))
+                text.setProperty("spotId", items.get("spotId"))
+                text.setProperty("mode", items.get("mode"))
                 text.setToolTip(items.get("comments"))
 
                 min_y = text_y + text.boundingRect().height() / 2
@@ -863,22 +887,28 @@ class MainWindow(QtWidgets.QMainWindow):
         Otherwise die gracefully.
         """
         # new stuff
-        items = self.bandmap_scene.selectedItems()
-        for item in items:
-            if item:
-                ...
+        selected_items = self.bandmap_scene.selectedItems()
+        if not selected_items:
+            return
+        selected = selected_items[0]
+        if selected:
+            spotId = selected.property("spotId")
+            # spotfreq = selected.property("freq")
+            # spotmode = selected.property("mode")
 
         # old stuff
         try:
+            spot = self.spotdb.getspot_byid(spotId)
+            item = f"xxx {spot.get('activator')} {spot.get('reference')} {int(spot.get('frequency')*1000)} {spot.get('mode')}"
+            print(item)
             self.loggable = True
             dateandtime = datetime.utcnow().isoformat(" ")[:19]
             self.time_field.setText(dateandtime.split(" ")[1].replace(":", ""))
             the_date_fields = dateandtime.split(" ")[0].split("-")
             the_date = f"{the_date_fields[0]}{the_date_fields[1]}{the_date_fields[2]}"
             self.date_field.setText(the_date)
-            item = self.listWidget.currentItem()
-            line = item.text().split()
-            self.lastclicked = item.text()
+            line = item.split()
+            self.lastclicked = item
             self.activator_call.setText(line[1])
 
             if "/" in line[1]:
@@ -1071,12 +1101,15 @@ window.show()
 window.getspots()
 timer = QtCore.QTimer()
 timer.timeout.connect(window.getspots)
+timer2 = QtCore.QTimer()
+timer2.timeout.connect(window.poll_radio)
 
 
 def run():
     """Start the app"""
     install_icons()
     timer.start(30000)
+    timer2.start(100)
     sys.exit(app.exec())
 
 
