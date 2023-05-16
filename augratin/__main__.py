@@ -367,9 +367,6 @@ class MainWindow(QtWidgets.QMainWindow):
         super().__init__(parent)
         data_path = WORKING_PATH + "/data/dialog.ui"
         uic.loadUi(data_path, self)
-        # self.listWidget.clicked.connect(self.spotclicked)
-        # self.listWidget.doubleClicked.connect(self.item_double_clicked)
-
         self.zoom_in_button.clicked.connect(self.dec_zoom)
         self.zoom_out_button.clicked.connect(self.inc_zoom)
         self.bandmap_scene = QtWidgets.QGraphicsScene()
@@ -377,9 +374,9 @@ class MainWindow(QtWidgets.QMainWindow):
         self.bandmap_scene.setFocusOnTouch(False)
         self.bandmap_scene.selectionChanged.connect(self.spotclicked)
         self.spotdb = Database()
-
         self.comboBox_mode.currentTextChanged.connect(self.getspots)
-        self.comboBox_band.currentTextChanged.connect(self.getspots)
+        self.comboBox_band.hide()
+        # self.comboBox_band.currentTextChanged.connect(self.getspots)
         self.mycall_field.textEdited.connect(self.save_call_and_grid)
         self.mygrid_field.textEdited.connect(self.save_call_and_grid)
         self.log_button.clicked.connect(self.log_contact)
@@ -407,9 +404,13 @@ class MainWindow(QtWidgets.QMainWindow):
         if self.cat_control:
             newfreq = float(self.cat_control.get_vfo()) / 1000000
             # newmode = self.cat_control.get_mode()
-            newbw = int(self.cat_control.get_bw())
+            if hasattr(self.cat_control, "get_bw"):
+                newbw = int(self.cat_control.get_bw())
+            else:
+                newbw = 0
             if self.rx_freq != newfreq:
                 self.rx_freq = newfreq
+                self.set_band(f"{self.getband(str(int(newfreq * 1000)))}m")
                 step, _ = self.determine_step_digits()
                 self.drawTXRXMarks(step)
             if self.bandwidth != newbw:
@@ -523,10 +524,6 @@ class MainWindow(QtWidgets.QMainWindow):
         arrgh = 6372.8  # Radius of earth in kilometers.
         return cee * arrgh
 
-    # def potasort(self, element):
-    #     """Sort list or dictionary items"""
-    #     return element["spotId"]
-
     def getspots(self):
         """Gets activator spots from pota.app"""
         self.time.setText(str(datetime.now(timezone.utc)).split()[1].split(".")[0][0:5])
@@ -589,45 +586,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.clear_fields()
         self.loggable = False
 
-    def showspots(self):
-        """Display spots in a list"""
-        # self.listWidget.clear()
-        for i in self.spots:
-            mode_selection = self.comboBox_mode.currentText()
-            if mode_selection == "-FT*" and i["mode"][:2] == "FT":
-                continue
-            if (
-                mode_selection == "All"
-                or mode_selection == "-FT*"
-                or i["mode"] == mode_selection
-            ):
-                band_selection = self.comboBox_band.currentText()
-                if (
-                    band_selection == "All"
-                    or self.getband(i["frequency"].split(".")[0]) == band_selection
-                ):
-                    spot = (
-                        f"{i['spotTime'].split('T')[1][0:5]} "
-                        f"{i['activator'].rjust(10)} "
-                        f"{i['reference'].ljust(7)} "
-                        f"{i['frequency'].split('.')[0].rjust(6)} "
-                        f"{i['mode']}"
-                    )
-
-                    # self.listWidget.addItem(spot)
-                    # if spot[5:] == self.lastclicked[5:]:
-                    #     founditem = self.listWidget.findItems(
-                    #         spot[5:],
-                    #         QtCore.Qt.MatchFlag.MatchContains,  # pylint: disable=no-member
-                    #     )
-                    #     founditem[0].setSelected(True)
-                    # if i["activator"] in self.workedlist:
-                    #     founditem = self.listWidget.findItems(
-                    #         i["activator"],
-                    #         QtCore.Qt.MatchFlag.MatchContains,  # pylint: disable=no-member
-                    #     )
-                    #     founditem[0].setBackground(QBrush(QColor.fromRgb(0, 128, 0)))
-
     def update(self):
         """doc"""
         # self.update_timer.setInterval(UPDATE_INTERVAL)
@@ -672,7 +630,6 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def update_stations(self):
         """doc"""
-        # self.update_timer.setInterval(UPDATE_INTERVAL)
         self.clear_all_callsign_from_scene()
         self.spot_aging()
         step, _digits = self.determine_step_digits()
@@ -680,7 +637,6 @@ class MainWindow(QtWidgets.QMainWindow):
         result = self.spotdb.getspotsinband(
             self.currentBand.start, self.currentBand.end
         )
-        # entity = ""
         if result:
             min_y = 0.0
             for items in result:
@@ -862,12 +818,12 @@ class MainWindow(QtWidgets.QMainWindow):
 
         return (step, digits)
 
-    def set_band(self, band: str, savePrevBandZoom: bool):
+    def set_band(self, band: str):
         """doc"""
-        logger.debug("%s", f"{band} {savePrevBandZoom}")
+        logger.debug("%s", f"{band}")
         if band != self.currentBand.name:
-            if savePrevBandZoom:
-                self.saveCurrentZoom()
+            # if savePrevBandZoom:
+            #     self.saveCurrentZoom()
             self.currentBand = Band(band)
             # self.zoom = self.savedZoom(band)
             self.update()
@@ -902,7 +858,6 @@ class MainWindow(QtWidgets.QMainWindow):
             spotId = selected.property("spotId")
             spotfreq = int(selected.property("freq") * 1000000)
             # spotmode = selected.property("mode")
-            print(spotfreq)
 
         # old stuff
         try:
