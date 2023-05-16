@@ -173,13 +173,26 @@ class Database:
         self.cursor = self.db.cursor()
         sql_command = (
             "create table spots("
-            "ts DATETIME NOT NULL, "
-            "callsign VARCHAR(15) NOT NULL, "
-            "freq DOUBLE NOT NULL, "
-            "band VARCHAR(6), "
+            "spotId INTEGER NOT NULL,"
+            "spotTime DATETIME NOT NULL, "
+            "activator VARCHAR(15) NOT NULL, "
+            "frequency INTEGER NOT NULL, "
             "mode VARCHAR(6), "
+            "reference VARCHAR(8), "
+            "parkName VARCHAR(50)"
             "spotter VARCHAR(15) NOT NULL, "
-            "comment VARCHAR(45));"
+            "comments VARCHAR(45), "
+            "source VARCHAR(8), "
+            "invalid INTEGER, "
+            "name VARCHAR(50), "
+            "locationDesc VARCHAR(10), "
+            "grid4 VARCHAR(4), "
+            "grid6 VARCHAR(6), "
+            "latitude REAL, "
+            "longitude REAL"
+            "count INTEGER"
+            "expire INTEGER"
+            ");"
         )
         self.cursor.execute(sql_command)
         self.db.commit()
@@ -203,7 +216,7 @@ class Database:
         """doc"""
         try:
             delete_call = (
-                f"delete from spots where callsign = '{spot.get('callsign')}';"
+                f"delete from spots where activator = '{spot.get('activator')}';"
             )
             self.cursor.execute(delete_call)
             self.db.commit()
@@ -227,7 +240,7 @@ class Database:
     def getspots(self) -> list:
         """returns a list of dicts."""
         try:
-            self.cursor.execute("select * from spots order by freq ASC;")
+            self.cursor.execute("select * from spots order by frequency ASC;")
             return self.cursor.fetchall()
         except sqlite3.OperationalError:
             return ()
@@ -235,28 +248,28 @@ class Database:
     def getspotsinband(self, start: float, end: float) -> list:
         """ "return a list of dict where freq range is defined"""
         self.cursor.execute(
-            f"select * from spots where freq >= {start} and freq <= {end} order by freq ASC;"
+            f"select * from spots where frequency >= {start} and frequency <= {end} order by frequency ASC;"
         )
         return self.cursor.fetchall()
 
     def get_next_spot(self, current: float, limit: float) -> dict:
         """ "return a list of dict where freq range is defined"""
         self.cursor.execute(
-            f"select * from spots where freq > {current} and freq <= {limit} order by freq ASC;"
+            f"select * from spots where frequency > {current} and frequency <= {limit} order by frequency ASC;"
         )
         return self.cursor.fetchone()
 
     def get_prev_spot(self, current: float, limit: float) -> dict:
         """ "return a list of dict where freq range is defined"""
         self.cursor.execute(
-            f"select * from spots where freq < {current} and freq >= {limit} order by freq DESC;"
+            f"select * from spots where frequency < {current} and frequency >= {limit} order by frequency DESC;"
         )
         return self.cursor.fetchone()
 
     def delete_spots(self, minutes: int):
         """doc"""
         self.cursor.execute(
-            f"delete from spots where ts < datetime('now', '-{minutes} minutes');"
+            f"delete from spots where spotTime < datetime('now', '-{minutes} minutes');"
         )
 
 
@@ -551,6 +564,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def showspots(self):
         """Display spots in a list"""
         # self.listWidget.clear()
+        print(f"{self.spots}")
         for i in self.spots:
             mode_selection = self.comboBox_mode.currentText()
             if mode_selection == "-FT*" and i["mode"][:2] == "FT":
