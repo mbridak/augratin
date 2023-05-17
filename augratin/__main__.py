@@ -111,6 +111,7 @@ parser.add_argument(
 args = parser.parse_args()
 
 PIXELSPERSTEP = 10
+YOFFSET = 10
 
 FORCED_INTERFACE = None
 SERVER_ADDRESS = None
@@ -375,6 +376,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.bandmap_scene.clear()
         self.bandmap_scene.setFocusOnTouch(False)
         self.bandmap_scene.selectionChanged.connect(self.spotclicked)
+        self.bandmap_scene.setFont(QtGui.QFont("JetBrains Mono", pointSize=5))
         self.spotdb = Database()
         self.comboBox_mode.currentTextChanged.connect(self.getspots)
         self.comboBox_band.hide()
@@ -599,32 +601,36 @@ class MainWindow(QtWidgets.QMainWindow):
 
         step, _digits = self.determine_step_digits()
         steps = int(round((self.currentBand.end - self.currentBand.start) / step))
-        self.graphicsView.setFixedSize(330, steps * PIXELSPERSTEP + 30)
         self.graphicsView.setScene(self.bandmap_scene)
         for i in range(steps):  # Draw tickmarks
             length = 10
             if i % 5 == 0:
                 length = 15
             self.bandmap_scene.addLine(
-                10,
+                170,
                 i * PIXELSPERSTEP,
-                length + 10,
+                length + 170,
                 i * PIXELSPERSTEP,
                 QtGui.QPen(QtGui.QColor(192, 192, 192)),
             )
             if i % 5 == 0:  # Add Frequency
                 freq = self.currentBand.start + step * i
                 text = f"{freq:.3f}"
-                self.something = self.bandmap_scene.addText(text)
+                self.something = self.bandmap_scene.addText(
+                    text, QtGui.QFont("JetBrains Mono", pointSize=11)
+                )
                 self.something.setPos(
-                    -(self.something.boundingRect().width()) + 10,
+                    -(self.something.boundingRect().width()) + 170,
                     i * PIXELSPERSTEP - (self.something.boundingRect().height() / 2),
                 )
 
         freq = self.currentBand.end + step * steps
         endFreqDigits = f"{freq:.3f}"
         self.bandmap_scene.setSceneRect(
-            160 - (len(endFreqDigits) * PIXELSPERSTEP), 0, 0, steps * PIXELSPERSTEP + 20
+            160 - (len(endFreqDigits) * PIXELSPERSTEP),
+            -15,
+            0,
+            steps * PIXELSPERSTEP + 20,
         )
 
         self.drawTXRXMarks(step)
@@ -655,9 +661,9 @@ class MainWindow(QtWidgets.QMainWindow):
                     text_y = max(min_y + 5, freq_y)
                     self.lineitemlist.append(
                         self.bandmap_scene.addLine(
-                            22,
+                            180,
                             freq_y,
-                            55,
+                            210,
                             text_y,
                             QtGui.QPen(QtGui.QColor(192, 192, 192)),
                         )
@@ -669,10 +675,11 @@ class MainWindow(QtWidgets.QMainWindow):
                         + " "
                         + items.get("mode")
                         + " "
-                        + items.get("spotTime").split("T")[1][:-3]
+                        + items.get("spotTime").split("T")[1][:-3],
+                        QtGui.QFont("JetBrains Mono", pointSize=11),
                     )
                     text.document().setDocumentMargin(0)
-                    text.setPos(60, text_y - (text.boundingRect().height() / 2))
+                    text.setPos(210, text_y - (text.boundingRect().height() / 2))
                     text.setFlags(
                         QtWidgets.QGraphicsItem.ItemIsFocusable
                         | QtWidgets.QGraphicsItem.ItemIsSelectable
@@ -682,6 +689,8 @@ class MainWindow(QtWidgets.QMainWindow):
                     text.setProperty("spotId", items.get("spotId"))
                     text.setProperty("mode", items.get("mode"))
                     text.setToolTip(items.get("comments"))
+                    if "QRT" in items.get("comments", "").upper():
+                        text.setDefaultTextColor(QtGui.QColor(120, 120, 120, 120))
 
                     min_y = text_y + text.boundingRect().height() / 2
 

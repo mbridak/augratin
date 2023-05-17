@@ -29,6 +29,7 @@
    <property name="font">
     <font>
      <family>JetBrains Mono</family>
+     <pointsize>11</pointsize>
     </font>
    </property>
    <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -277,7 +278,20 @@
               <property name="font">
                <font>
                 <family>JetBrains Mono</family>
+                <pointsize>11</pointsize>
                </font>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+              </property>
+              <property name="renderHints">
+               <set>QPainter::Antialiasing|QPainter::TextAntialiasing</set>
+              </property>
+              <property name="transformationAnchor">
+               <enum>QGraphicsView::NoAnchor</enum>
+              </property>
+              <property name="resizeAnchor">
+               <enum>QGraphicsView::AnchorViewCenter</enum>
               </property>
              </widget>
             </item>
@@ -303,6 +317,7 @@
             <property name="font">
              <font>
               <family>JetBrains Mono</family>
+              <pointsize>11</pointsize>
              </font>
             </property>
             <property name="text">
@@ -315,6 +330,7 @@
             <property name="font">
              <font>
               <family>JetBrains Mono</family>
+              <pointsize>11</pointsize>
              </font>
             </property>
             <property name="focusPolicy">
@@ -330,6 +346,7 @@
             <property name="font">
              <font>
               <family>JetBrains Mono</family>
+              <pointsize>11</pointsize>
              </font>
             </property>
             <property name="text">
@@ -342,6 +359,7 @@
             <property name="font">
              <font>
               <family>JetBrains Mono</family>
+              <pointsize>11</pointsize>
              </font>
             </property>
             <property name="focusPolicy">
@@ -377,6 +395,7 @@
             <property name="font">
              <font>
               <family>JetBrains Mono</family>
+              <pointsize>11</pointsize>
              </font>
             </property>
             <property name="focusPolicy">
@@ -395,6 +414,7 @@
             <property name="font">
              <font>
               <family>JetBrains Mono</family>
+              <pointsize>11</pointsize>
              </font>
             </property>
             <property name="focusPolicy">
@@ -414,6 +434,7 @@
             <property name="font">
              <font>
               <family>JetBrains Mono</family>
+              <pointsize>11</pointsize>
              </font>
             </property>
             <property name="focusPolicy">
@@ -429,6 +450,7 @@
             <property name="font">
              <font>
               <family>JetBrains Mono</family>
+              <pointsize>11</pointsize>
              </font>
             </property>
             <property name="focusPolicy">
@@ -448,6 +470,7 @@
             <property name="font">
              <font>
               <family>JetBrains Mono</family>
+              <pointsize>11</pointsize>
              </font>
             </property>
             <property name="focusPolicy">
@@ -463,6 +486,7 @@
             <property name="font">
              <font>
               <family>JetBrains Mono</family>
+              <pointsize>11</pointsize>
              </font>
             </property>
             <property name="focusPolicy">
@@ -482,6 +506,7 @@
             <property name="font">
              <font>
               <family>JetBrains Mono</family>
+              <pointsize>11</pointsize>
              </font>
             </property>
             <property name="focusPolicy">
@@ -500,6 +525,7 @@
             <property name="font">
              <font>
               <family>JetBrains Mono</family>
+              <pointsize>11</pointsize>
              </font>
             </property>
             <property name="focusPolicy">
@@ -518,6 +544,7 @@
             <property name="font">
              <font>
               <family>JetBrains Mono</family>
+              <pointsize>11</pointsize>
              </font>
             </property>
             <property name="text">
@@ -530,6 +557,7 @@
             <property name="font">
              <font>
               <family>JetBrains Mono</family>
+              <pointsize>11</pointsize>
              </font>
             </property>
             <property name="focusPolicy">
@@ -548,6 +576,7 @@
             <property name="font">
              <font>
               <family>JetBrains Mono</family>
+              <pointsize>11</pointsize>
              </font>
             </property>
             <property name="text">
@@ -577,6 +606,7 @@
             <property name="font">
              <font>
               <family>JetBrains Mono</family>
+              <pointsize>11</pointsize>
              </font>
             </property>
             <property name="text">
@@ -589,6 +619,7 @@
             <property name="font">
              <font>
               <family>JetBrains Mono</family>
+              <pointsize>11</pointsize>
              </font>
             </property>
             <property name="focusPolicy">
@@ -604,6 +635,7 @@
             <property name="font">
              <font>
               <family>JetBrains Mono</family>
+              <pointsize>11</pointsize>
              </font>
             </property>
             <property name="text">
@@ -616,6 +648,7 @@
             <property name="font">
              <font>
               <family>JetBrains Mono</family>
+              <pointsize>11</pointsize>
              </font>
             </property>
             <property name="focusPolicy">
@@ -648,6 +681,7 @@
             <property name="font">
              <font>
               <family>JetBrains Mono</family>
+              <pointsize>11</pointsize>
              </font>
             </property>
             <property name="focusPolicy">
@@ -663,6 +697,7 @@
             <property name="font">
              <font>
               <family>JetBrains Mono</family>
+              <pointsize>11</pointsize>
              </font>
             </property>
             <property name="focusPolicy">
@@ -678,6 +713,7 @@
             <property name="font">
              <font>
               <family>JetBrains Mono</family>
+              <pointsize>11</pointsize>
              </font>
             </property>
             <property name="focusPolicy">
@@ -706,6 +742,7 @@
             <property name="font">
              <font>
               <family>JetBrains Mono</family>
+              <pointsize>11</pointsize>
              </font>
             </property>
             <property name="text">
@@ -718,6 +755,7 @@
             <property name="font">
              <font>
               <family>JetBrains Mono</family>
+              <pointsize>11</pointsize>
              </font>
             </property>
             <property name="focusPolicy">
@@ -733,6 +771,7 @@
             <property name="font">
              <font>
               <family>JetBrains Mono</family>
+              <pointsize>11</pointsize>
              </font>
             </property>
             <property name="text">
@@ -745,6 +784,7 @@
             <property name="font">
              <font>
               <family>JetBrains Mono</family>
+              <pointsize>11</pointsize>
              </font>
             </property>
             <property name="focusPolicy">
@@ -773,6 +813,7 @@
             <property name="font">
              <font>
               <family>JetBrains Mono</family>
+              <pointsize>11</pointsize>
              </font>
             </property>
             <property name="focusPolicy">
