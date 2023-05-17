@@ -272,12 +272,12 @@ class Database:
         return self.cursor.fetchone()
 
     def getspot_byid(self, spot_id: int) -> dict:
-        """ "return dict of spot with the matching spotId"""
+        """Return a dict of spot with the matching spotId"""
         self.cursor.execute(f"select * from spots where spotId = {spot_id};")
         return self.cursor.fetchone()
 
     def delete_spots(self, minutes: int):
-        """doc"""
+        """Delete old spots"""
         self.cursor.execute(
             f"delete from spots where spotTime < datetime('now', '-{minutes} minutes');"
         )
@@ -287,7 +287,7 @@ class MainWindow(QtWidgets.QMainWindow):
     """The main window class"""
 
     zoom = 5
-    currentBand = Band("20m")
+    currentBand = Band("2m")
     txMark = []
     rxMark = []
     rx_freq = None
@@ -379,8 +379,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self.bandmap_scene.setFont(QtGui.QFont("JetBrains Mono", pointSize=5))
         self.spotdb = Database()
         self.comboBox_mode.currentTextChanged.connect(self.getspots)
-        self.comboBox_band.hide()
-        # self.comboBox_band.currentTextChanged.connect(self.getspots)
+        self.comboBox_band.currentTextChanged.connect(self.nocat_bandchange)
+        if self.cat_control is not None:
+            self.comboBox_band.hide()
+
         self.mycall_field.textEdited.connect(self.save_call_and_grid)
         self.mygrid_field.textEdited.connect(self.save_call_and_grid)
         self.log_button.clicked.connect(self.log_contact)
@@ -422,6 +424,12 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.bandwidth = newbw
                 step, _ = self.determine_step_digits()
                 self.drawTXRXMarks(step)
+
+    def nocat_bandchange(self) -> None:
+        """Called when the bandselector dropdown changes."""
+        band = self.comboBox_band.currentText()
+        self.set_band(f"{band}m")
+        self.update()
 
     def save_call_and_grid(self):
         """Saves users callsign and gridsquare to json file."""
@@ -537,8 +545,6 @@ class MainWindow(QtWidgets.QMainWindow):
             for spot in self.spots:
                 spot["frequency"] = float(spot.get("frequency")) / 1000
                 self.spotdb.addspot(spot)
-            # self.spots.sort(reverse=True, key=self.potasort)
-            # self.showspots()
             self.update()
 
     def log_contact(self):
@@ -762,10 +768,11 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def center_on_rxfreq(self):
         """doc"""
-        freq_pos = self.Freq2ScenePos(self.rx_freq).y()
-        self.graphicsView.verticalScrollBar().setSliderPosition(
-            int(freq_pos - (self.height() / 2) + 80)
-        )
+        if self.cat_control is not None and self.rx_freq:
+            freq_pos = self.Freq2ScenePos(self.rx_freq).y()
+            self.graphicsView.verticalScrollBar().setSliderPosition(
+                int(freq_pos - (self.height() / 2) + 80)
+            )
 
     def drawfreqmark(self, freq, _step, color, currentPolygon):
         """doc"""

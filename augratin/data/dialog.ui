@@ -104,11 +104,6 @@
             </property>
             <item>
              <property name="text">
-              <string>All</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
               <string>2</string>
              </property>
             </item>
