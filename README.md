@@ -37,7 +37,7 @@ which you can then import into your normal logging program.
 
 ## Recent changes
 
-- [23-5-17] Reworked bandmap display. Spots with QRT in comment are now muted.
+- [23-5-17] Reworked bandmap display. Spots with QRT in comment are now muted. Center bandmap on RX freq when changing vfo or zooming display.
 - [23-5-15] Start big code changes to impliment better bandmap.
 - [23-3-28] Merged in changes from @barryshaffer KK7JXG to add support for Omnirig on windows.
 - [23-3-7] Reduced network timeout for spot pulls from 15 to 5 seconds. Safer dictionary key access.

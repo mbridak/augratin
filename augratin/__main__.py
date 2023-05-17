@@ -417,6 +417,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.set_band(f"{self.getband(str(int(newfreq * 1000)))}m")
                 step, _ = self.determine_step_digits()
                 self.drawTXRXMarks(step)
+                self.center_on_rxfreq()
             if self.bandwidth != newbw:
                 self.bandwidth = newbw
                 step, _ = self.determine_step_digits()
@@ -762,7 +763,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def center_on_rxfreq(self):
         """doc"""
         freq_pos = self.Freq2ScenePos(self.rx_freq).y()
-        self.scrollArea.verticalScrollBar().setValue(
+        self.graphicsView.verticalScrollBar().setSliderPosition(
             int(freq_pos - (self.height() / 2) + 80)
         )
 
@@ -778,9 +779,9 @@ class MainWindow(QtWidgets.QMainWindow):
 
         poly = QtGui.QPolygonF()
 
-        poly.append(QtCore.QPointF(21, Yposition))
-        poly.append(QtCore.QPointF(10, Yposition - 7))
-        poly.append(QtCore.QPointF(10, Yposition + 7))
+        poly.append(QtCore.QPointF(181, Yposition))
+        poly.append(QtCore.QPointF(170, Yposition - 7))
+        poly.append(QtCore.QPointF(170, Yposition + 7))
         pen = QtGui.QPen()
         brush = QtGui.QBrush(color)
         currentPolygon.append(self.bandmap_scene.addPolygon(poly, pen, brush))
@@ -799,10 +800,10 @@ class MainWindow(QtWidgets.QMainWindow):
             Yposition_neg = self.Freq2ScenePos(bw_start).y()
             Yposition_pos = self.Freq2ScenePos(bw_end).y()
             poly = QtGui.QPolygonF()
-            poly.append(QtCore.QPointF(15, Yposition_neg))
-            poly.append(QtCore.QPointF(20, Yposition_neg))
-            poly.append(QtCore.QPointF(20, Yposition_pos))
-            poly.append(QtCore.QPointF(15, Yposition_pos))
+            poly.append(QtCore.QPointF(175, Yposition_neg))
+            poly.append(QtCore.QPointF(180, Yposition_neg))
+            poly.append(QtCore.QPointF(180, Yposition_pos))
+            poly.append(QtCore.QPointF(175, Yposition_pos))
             pen = QtGui.QPen()
             brush = QtGui.QBrush(color)
             currentPolygon.append(self.bandmap_scene.addPolygon(poly, pen, brush))
