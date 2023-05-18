@@ -398,8 +398,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.spotdb = Database()
         self.comboBox_mode.currentTextChanged.connect(self.getspots)
         self.comboBox_band.currentTextChanged.connect(self.nocat_bandchange)
-        if self.cat_control is not None:
-            self.comboBox_band.hide()
+        # if self.cat_control is not None:
+        #     self.comboBox_band.hide()
 
         self.mycall_field.textEdited.connect(self.save_call_and_grid)
         self.mygrid_field.textEdited.connect(self.save_call_and_grid)
