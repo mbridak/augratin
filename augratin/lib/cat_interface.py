@@ -61,6 +61,10 @@ class CAT:
             logger.debug("%s", target)
             self.server = xmlrpc.client.ServerProxy(target)
             self.online = True
+            try:
+                _ = self.server.main.get_version()
+            except ConnectionRefusedError:
+                self.online = False
         if self.interface == "rigctld":
             self.__initialize_rigctrld()
 
