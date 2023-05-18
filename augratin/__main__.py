@@ -409,9 +409,11 @@ class MainWindow(QtWidgets.QMainWindow):
         """Get Freq and Mode changes"""
         if self.cat_control:
             newfreq = float(self.cat_control.get_vfo()) / 1000000
-            # newmode = self.cat_control.get_mode()
             if hasattr(self.cat_control, "get_bw"):
-                newbw = int(self.cat_control.get_bw())
+                try:
+                    newbw = int(self.cat_control.get_bw())
+                except TypeError:
+                    newbw = 0
             else:
                 newbw = 0
             if self.rx_freq != newfreq:
