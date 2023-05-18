@@ -351,23 +351,37 @@ class MainWindow(QtWidgets.QMainWindow):
         local_omnirig = self.check_process("omnirig.exe")
 
         if FORCED_INTERFACE:
+            logger.debug("%s", f"Forced interface: {FORCED_INTERFACE} {SERVER_ADDRESS}")
             address, port = SERVER_ADDRESS.split(":")
             self.cat_control = CAT(FORCED_INTERFACE, address, int(port))
-        if self.cat_control is None:
+            if self.cat_control.online is False:
+                self.show_message_box(
+                    f"Was unable to connect to {FORCED_INTERFACE}.\n"
+                    f"Using Address: {address} Port: {port}"
+                )
+        else:
             if local_flrig:
                 if SERVER_ADDRESS:
                     address, port = SERVER_ADDRESS.split(":")
                 else:
                     address, port = "localhost", "12345"
-                    self.cat_control = CAT("flrig", address, int(port))
-                    if not self.cat_control.online:
-                        self.show_message_box("Was unable to connect to flrig.")
+                self.cat_control = CAT("flrig", address, int(port))
+                if self.cat_control.online is False:
+                    self.show_message_box(
+                        "Was unable to connect to flrig.\n"
+                        f"Using Address: {address} Port: {port}"
+                    )
             if local_rigctld:
                 if SERVER_ADDRESS:
                     address, port = SERVER_ADDRESS.split(":")
                 else:
                     address, port = "localhost", "4532"
-                    self.cat_control = CAT("rigctld", address, int(port))
+                self.cat_control = CAT("rigctld", address, int(port))
+                if self.cat_control.online is False:
+                    self.show_message_box(
+                        "Was unable to connect to rigctld.\n"
+                        f"Using Address: {address} Port: {port}"
+                    )
             if local_omnirig:
                 self.cat_control = OmniRigClient(OMNI_RIGNUMBER)
                 logging.debug("omnirig called")
