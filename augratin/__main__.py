@@ -407,12 +407,17 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def poll_radio(self):
         """Get Freq and Mode changes"""
-        if self.cat_control:
-            newfreq = float(self.cat_control.get_vfo()) / 1000000
+        if self.cat_control.online:
+            try:
+                newfreq = float(self.cat_control.get_vfo()) / 1000000
+            except ValueError:
+                return
             if hasattr(self.cat_control, "get_bw"):
                 try:
                     newbw = int(self.cat_control.get_bw())
                 except TypeError:
+                    newbw = 0
+                except ValueError:
                     newbw = 0
             else:
                 newbw = 0
