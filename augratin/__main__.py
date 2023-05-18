@@ -314,6 +314,10 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def __init__(self, parent=None):
         """Initialize class variables"""
+        super().__init__(parent)
+        data_path = WORKING_PATH + "/data/dialog.ui"
+        uic.loadUi(data_path, self)
+
         self.settings = {
             "mycall": "",
             "mygrid": "",
@@ -349,7 +353,6 @@ class MainWindow(QtWidgets.QMainWindow):
         if FORCED_INTERFACE:
             address, port = SERVER_ADDRESS.split(":")
             self.cat_control = CAT(FORCED_INTERFACE, address, int(port))
-
         if self.cat_control is None:
             if local_flrig:
                 if SERVER_ADDRESS:
@@ -357,6 +360,8 @@ class MainWindow(QtWidgets.QMainWindow):
                 else:
                     address, port = "localhost", "12345"
                     self.cat_control = CAT("flrig", address, int(port))
+                    if not self.cat_control.online:
+                        self.show_message_box("Was unable to connect to flrig.")
             if local_rigctld:
                 if SERVER_ADDRESS:
                     address, port = SERVER_ADDRESS.split(":")
@@ -367,9 +372,6 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.cat_control = OmniRigClient(OMNI_RIGNUMBER)
                 logging.debug("omnirig called")
 
-        super().__init__(parent)
-        data_path = WORKING_PATH + "/data/dialog.ui"
-        uic.loadUi(data_path, self)
         self.zoom_in_button.clicked.connect(self.dec_zoom)
         self.zoom_out_button.clicked.connect(self.inc_zoom)
         self.bandmap_scene = QtWidgets.QGraphicsScene()
@@ -407,30 +409,40 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def poll_radio(self):
         """Get Freq and Mode changes"""
-        if self.cat_control.online:
-            try:
-                newfreq = float(self.cat_control.get_vfo()) / 1000000
-            except ValueError:
-                return
-            if hasattr(self.cat_control, "get_bw"):
+        if self.cat_control:
+            if self.cat_control.online:
                 try:
-                    newbw = int(self.cat_control.get_bw())
-                except TypeError:
-                    newbw = 0
+                    newfreq = float(self.cat_control.get_vfo()) / 1000000
                 except ValueError:
+                    return
+                if hasattr(self.cat_control, "get_bw"):
+                    try:
+                        newbw = int(self.cat_control.get_bw())
+                    except TypeError:
+                        newbw = 0
+                    except ValueError:
+                        newbw = 0
+                else:
                     newbw = 0
-            else:
-                newbw = 0
-            if self.rx_freq != newfreq:
-                self.rx_freq = newfreq
-                self.set_band(f"{self.getband(str(int(newfreq * 1000)))}m")
-                step, _ = self.determine_step_digits()
-                self.drawTXRXMarks(step)
-                self.center_on_rxfreq()
-            if self.bandwidth != newbw:
-                self.bandwidth = newbw
-                step, _ = self.determine_step_digits()
-                self.drawTXRXMarks(step)
+                if self.rx_freq != newfreq:
+                    self.rx_freq = newfreq
+                    self.set_band(f"{self.getband(str(int(newfreq * 1000)))}m")
+                    step, _ = self.determine_step_digits()
+                    self.drawTXRXMarks(step)
+                    self.center_on_rxfreq()
+                if self.bandwidth != newbw:
+                    self.bandwidth = newbw
+                    step, _ = self.determine_step_digits()
+                    self.drawTXRXMarks(step)
+
+    def show_message_box(self, message: str) -> None:
+        """Display a message box to the user."""
+        message_box = QtWidgets.QMessageBox()
+        message_box.setIcon(QtWidgets.QMessageBox.Information)
+        message_box.setText(message)
+        message_box.setWindowTitle("Information")
+        message_box.setStandardButtons(QtWidgets.QMessageBox.Ok)
+        _ = message_box.exec_()
 
     def nocat_bandchange(self) -> None:
         """Called when the bandselector dropdown changes."""
@@ -550,8 +562,11 @@ class MainWindow(QtWidgets.QMainWindow):
         self.spots = self.getjson(self.potaurl)
         if self.spots:
             for spot in self.spots:
-                spot["frequency"] = float(spot.get("frequency")) / 1000
-                self.spotdb.addspot(spot)
+                try:
+                    spot["frequency"] = float(spot.get("frequency")) / 1000
+                    self.spotdb.addspot(spot)
+                except ValueError:
+                    pass
             self.update()
 
     def log_contact(self):
