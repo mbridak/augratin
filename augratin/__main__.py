@@ -56,7 +56,11 @@ __license__ = "GNU General Public License v3.0"
 os.environ["QT_QPA_PLATFORMTHEME"] = "gnome"
 
 loader = pkgutil.get_loader("augratin")
-WORKING_PATH = os.path.dirname(loader.get_filename())
+if loader is not None:
+    WORKING_PATH = os.path.dirname(loader.get_filename())
+else:
+    WORKING_PATH = "./"
+# WORKING_PATH = os.path.dirname(loader.get_filename())
 
 logger = logging.getLogger("__name__")
 handler = logging.StreamHandler()
