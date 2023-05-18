@@ -37,6 +37,7 @@ which you can then import into your normal logging program.
 
 ## Recent changes
 
+- [23-5-18] Fix crashes related to if flrig running w/ no radio, or flrig closes.
 - [23-5-17] Reworked bandmap display. Spots with QRT in comment are now muted. Center bandmap on RX freq when changing vfo or zooming display. Provided Non CAT control users to change bands.
 - [23-5-15] Start big code changes to impliment better bandmap.
 - [23-3-28] Merged in changes from @barryshaffer KK7JXG to add support for Omnirig on windows.
