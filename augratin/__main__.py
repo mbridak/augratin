@@ -37,6 +37,10 @@ import PyQt5.QtWebEngineWidgets  # pylint: disable=unused-import
 import requests
 import folium
 
+if os.environ.get("XDG_CURRENT_DESKTOP", False) == "GNOME":
+    os.environ["QT_QPA_PLATFORMTHEME"] = "gnome"
+    os.environ["QT_STYLE_OVERRIDE"] = "Adwaita-Dark"
+
 try:
     from augratin.lib.version import __version__
     from augratin.lib.cat_interface import CAT
@@ -53,7 +57,6 @@ except ModuleNotFoundError:
 __author__ = "Michael C. Bridak, K6GTE"
 __license__ = "GNU General Public License v3.0"
 
-os.environ["QT_QPA_PLATFORMTHEME"] = "gnome"
 
 loader = pkgutil.get_loader("augratin")
 if loader is not None:
