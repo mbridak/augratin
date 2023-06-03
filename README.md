@@ -29,15 +29,19 @@ Other Radio Amateurs also known as Hunters or Chasers, will seek out and try to 
 
 AuGratin allows A [POTA](https://parksontheair.com) Hunter to easily log contacts with Activators.
 It pulls latest [POTA](https://parksontheair.com) spots. Displays them in a compact interface.
-Once a spot is clicked on AuGratin will talk to either rigctld or flrig to change the radio to the correct
+Once a spot is clicked on AuGratin will talk to either rigctld, flrig, or OmniRig to change the radio to the correct
 frequency and mode. It will pre-populate All the fields needed for logging the contact.
 All contacts are stored in an ADIF file in your home directory,
-which you can them import into your normal logging program.
+which you can then import into your normal logging program.
 
 ![screenshot](https://github.com/mbridak/augratin/raw/master/pic/screenshot.png)
 
 ## Recent changes
 
+- [23-5-26] Added Ubuntu dark mode if adwaita-qt is installed.
+- [23-5-18] Fix crashes related to if flrig running w/ no radio, or flrig closes. Add dialog message window to initial startup if CAT control failed. For some reason I was missing the 17m band. Added back band selector for those who have CAT.
+- [23-5-17] Reworked bandmap display. Spots with QRT in comment are now muted. Center bandmap on RX freq when changing vfo or zooming display. Provided Non CAT control users to change bands.
+- [23-5-15] Start big code changes to impliment better bandmap.
 - [23-3-28] Merged in changes from @barryshaffer KK7JXG to add support for Omnirig on windows.
 - [23-3-7] Reduced network timeout for spot pulls from 15 to 5 seconds. Safer dictionary key access.
 - [23-2-17] Repackaged for PyPi and pip install
@@ -60,10 +64,11 @@ augratin
 
 ## Features
 
-- You can filter spots by band and or mode.
+- Shows spots on a band map
+- You can filter spots by mode.
 - Pulls in park and activator information.
-- Tunes your radio with flrig or rigctld to the activator and sets the mode automatically.
-- Double clicked spots adds Activator to a persistent watchlist.
+- Clicked spots, tune your radio with flrig, rigctld or OmniRig to the activator and sets the mode automatically.
+- ~~Double clicked spots adds Activator to a persistent watchlist.~~
 - Displays bearing to contact.
 
 When you press the "Log it" button the adif information is appended to `POTA_Contacts.adi` in your home folder.
@@ -74,7 +79,7 @@ Not sure why, but the map may not work if you let pip install PyQt5 and PyQtWebE
 
 ```bash
 pip uninstall PyQt5
-Pip uninstall PyQtWebEngine
+pip uninstall PyQtWebEngine
 ```
 
 Then install them through your package manager.
