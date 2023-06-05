@@ -846,8 +846,17 @@ class MainWindow(QtWidgets.QMainWindow):
             return
         if freq and self.bandwidth:
             # color = QtGui.QColor(30, 30, 180)
-            bw_start = freq - ((self.bandwidth / 2) / 1000000)
-            bw_end = freq + ((self.bandwidth / 2) / 1000000)
+            mode = self.comboBox_mode.currentText()
+            if mode == "SSB":
+                if freq > 10:
+                    bw_start = freq
+                    bw_end = freq + ((self.bandwidth) / 1000000)
+                else:
+                    bw_start = freq 
+                    bw_end = freq - ((self.bandwidth) / 1000000)
+            else:
+                bw_start = freq - ((self.bandwidth / 2) / 1000000)
+                bw_end = freq + ((self.bandwidth / 2) / 1000000)
             logger.debug("%s", f"s:{bw_start} e:{bw_end}")
             Yposition_neg = self.Freq2ScenePos(bw_start).y()
             Yposition_pos = self.Freq2ScenePos(bw_end).y()
