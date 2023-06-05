@@ -3,7 +3,7 @@ KK7JXG simple omnirig CAT control
 email:barry.shaffer@gmail.com
 GPL V3
 """
-
+# pyright: ignore[reportOptionalMemberAccess]
 
 import logging
 
@@ -29,6 +29,10 @@ class OmniRigClient:
         set_vfo()
 
         set_mode()
+
+        get_vfo()
+
+        get_bw()
 
         A variable 'online' is set to True if no error was encountered,
         otherwise False.
@@ -73,3 +77,38 @@ class OmniRigClient:
             self.omnirig_object.Rig2.Mode = omni_mode
             return True
         return False
+    
+    def get_vfo(self) -> int:
+        """Returns the radios vfo"""
+        if self.rig == 1:
+            return self.omnirig_object.Rig1.Freq
+        if self.rig == 2:
+            return self.omnirig_object.Rig2.Freq
+        return False
+    
+    def get_bw(self) -> int:
+        """Returns the radios bandwidth"""
+        if self.rig == 1:
+            mode = int(self.omnirig_object.Rig1.Mode)
+            if mode == 8388608 or mode == 16777216:
+                return 500
+            elif mode == 33554432 or mode == 67108864 or mode == 134217728 or mode == 268435456:
+                return 3000
+            elif mode == 536870912:
+                return 6000
+            else:
+                return 12000
+        if self.rig == 2:
+            mode = int(self.omnirig_object.Rig2.Mode)
+            if mode == 8388608 or mode == 16777216:
+                return 500
+            elif mode == 33554432 or mode == 67108864 or mode == 134217728 or mode == 268435456:
+                return 3000
+            elif mode == 536870912:
+                return 6000
+            else:
+                return 12000
+        return False
+        
+        
+
