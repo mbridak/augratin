@@ -64,6 +64,7 @@ augratin
 
 ## Features
 
+- UDP broadcasting of QSOs for integration into logging software
 - Shows spots on a band map
 - You can filter spots by mode.
 - Pulls in park and activator information.
