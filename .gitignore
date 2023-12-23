@@ -4,3 +4,4 @@ dist
 augratin.egg-info
 __pycache__
 publish.sh
+.vscode
