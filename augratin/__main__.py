@@ -25,6 +25,8 @@ from datetime import datetime, timezone
 from json import loads, dumps
 import re
 
+from augratin.lib.udp_broadcast import broadcast_adif
+
 import psutil
 from PyQt5 import QtCore, QtWidgets, QtGui, uic
 from PyQt5.QtCore import QDir
@@ -109,6 +111,13 @@ parser.add_argument(
 )
 
 parser.add_argument(
+    "-u",
+    "--udp",
+    type=str,
+    help="Force UDP Server Address. --udp localhost:2333",
+)
+
+parser.add_argument(
     "-d",
     action=argparse.BooleanOptionalAction,
     dest="debug",
@@ -123,6 +132,7 @@ YOFFSET = 10
 FORCED_INTERFACE = None
 SERVER_ADDRESS = None
 OMNI_RIGNUMBER = 1
+UDP_SERVER = "localhost:2333"
 
 if args.rigctld:
     FORCED_INTERFACE = "rigctld"
@@ -138,11 +148,16 @@ if args.server:
 if args.rig2:
     OMNI_RIGNUMBER = 2
 
+if args.udp:
+    UDP_SERVER = args.udp
+
 if args.debug:
     logger.setLevel(logging.DEBUG)
 
 logger.debug("Forces Interface: %s", FORCED_INTERFACE)
 logger.debug("Server Address: %s", SERVER_ADDRESS)
+logger.debug("Omnirig Rig Number: %s", OMNI_RIGNUMBER)
+logger.debug("UDP Server: %s", UDP_SERVER)
 
 
 def load_fonts_from_dir(directory):
@@ -639,6 +654,11 @@ class MainWindow(QtWidgets.QMainWindow):
             home + "/POTA_Contacts.adi", "a", encoding="utf-8"
         ) as file_descriptor:
             print(qso, file=file_descriptor)
+        
+        # Broadcast ADIF to listeners via UDP
+        result = broadcast_adif(qso, UDP_SERVER)
+        logger.debug("Broadcast result: %s", result)    
+   
         self.clear_fields()
         self.loggable = False
 
