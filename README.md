@@ -13,7 +13,7 @@
   - [Features](#features)
   - [What to do if your map is blank](#what-to-do-if-your-map-is-blank)
   - [What to do if omnirig fails to connect](#what-to-do-if-omnirig-fails-to-connect)
-  - [CAT control](#cat-control)
+  - [CAT control and things](#cat-control-and-things)
 
 ## Why AuGratin
 
@@ -38,6 +38,7 @@ which you can then import into your normal logging program.
 
 ## Recent changes
 
+- [23-12-22] Added UDP broadcast of ADIF info for popular logging software integration (tested with HRD)
 - [23-5-26] Added Ubuntu dark mode if adwaita-qt is installed.
 - [23-5-18] Fix crashes related to if flrig running w/ no radio, or flrig closes. Add dialog message window to initial startup if CAT control failed. For some reason I was missing the 17m band. Added back band selector for those who have CAT.
 - [23-5-17] Reworked bandmap display. Spots with QRT in comment are now muted. Center bandmap on RX freq when changing vfo or zooming display. Provided Non CAT control users to change bands.
@@ -97,7 +98,7 @@ sudo apt install python3-pyqt5 python3-pyqt5.qtwebengine
 
 On occasion the win32 cache files can get corrupted preventing connection to omnirig. If omnirig was previously working but the continues to fail try erasing the cache files located here: C:\Users\username*\AppData\Local\Temp\gen_py\python version*
 
-## CAT control
+## CAT control and things
 
 If no command line options are given, the program will check if either flrig, rigctld or OmniRig are running on the computer. It will setup CAT control to whichever it finds first.
 
@@ -110,3 +111,5 @@ You can force it to use either with commandline options.
 `-2` will force 'Rig2' with OmniRig.
 
 `-s SERVER:PORT` will specify a non-standard host and port.
+
+`-u UDP_SERVER:PORT` will specify a desired UDP server and port - Default is localhost:2333.

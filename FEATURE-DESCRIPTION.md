@@ -2,4 +2,8 @@
 Enhance Augratin by integrating a feature to broadcast POTA QSOs using UDP when the ‘log it’ button is activated.
 
 # Approach:
-Leveraging the UDP broadcasting method employed by WSJTX, a popular platform whose format is already compatible with various logging programs like HRD, we aim to ensure broader compatibility and ease of integration. By adopting this UDP format, we can avoid the complexities of TCP message streams from HRD, increasing the likelihood of seamless functionality with other logging applications, including those not yet considered.
+Using Port 2333 to send which is the same port as WSJT-X. Figured with the popularity of WSJT-X, most logging software would most likely have builtin capability to listen for adif data on that part (I know HRD does) Probably not a scenario where Augratin and WSTJ-TX would be useds simultaineosly - May rethink this but there is the option to force a different UDP server address in the args. 
+
+# Dev Notes
+this branch also has some configuration files for setting up a devcontainer for vscode. Never did this before and used this as a learning opportunity. Probably made it way over complicated. It did take me two days to figure out how to set up the environment and 20 min. to code the added function....
+
