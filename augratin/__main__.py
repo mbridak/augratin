@@ -13,6 +13,7 @@
 # {"callsign": "K2EAG", "name": "Matt Brown", "qth": "Amherst, New York", "gravatar": "bf8377378b67b265cbb2be687b13a23a", "activator": {"activations": 72, "parks": 33, "qsos": 3724}, "attempts": {"activations": 80, "parks": 33, "qsos": 3724}, "hunter": {"parks": 237, "qsos": 334}, "awards": 16, "endorsements": 32}
 
 import argparse
+import datetime
 import sys
 import sqlite3
 import os
@@ -21,7 +22,7 @@ import logging
 from math import radians, sin, cos, atan2, sqrt, asin, pi
 import pkgutil
 from pathlib import Path
-from datetime import datetime, timezone
+
 from json import loads, dumps
 import re
 
@@ -29,12 +30,9 @@ from augratin.lib.udp_broadcast import broadcast_adif
 
 import psutil
 from PyQt5 import QtCore, QtWidgets, QtGui, uic
-from PyQt5.QtCore import QDir
+from PyQt5.QtCore import QDir, Qt
 from PyQt5.QtGui import QFontDatabase, QBrush, QColor
 import PyQt5.QtWebEngineWidgets  # pylint: disable=unused-import
-
-# from PyQt5.QtWebEngineWidgets import QWebEngineView
-
 
 import requests
 import folium
@@ -58,7 +56,6 @@ except ModuleNotFoundError:
 
 __author__ = "Michael C. Bridak, K6GTE"
 __license__ = "GNU General Public License v3.0"
-
 
 loader = pkgutil.get_loader("augratin")
 if loader is not None:
@@ -346,6 +343,7 @@ class MainWindow(QtWidgets.QMainWindow):
             "mycall": "",
             "mygrid": "",
         }
+        self.setDarkMode(True)
         try:
             home = os.path.expanduser("~")
             if os.path.exists(f"{home}/.augratin.json"):
@@ -444,6 +442,88 @@ class MainWindow(QtWidgets.QMainWindow):
         data = io.BytesIO()
         self.map.save(data, close_file=False)
         self.mapview.setHtml(data.getvalue().decode())
+
+    def keyPressEvent(self, event):  # pylint: disable=invalid-name
+        """This overrides Qt key event."""
+        modifier = event.modifiers()
+        if event.key() == Qt.Key.Key_Up and modifier == Qt.ControlModifier:
+            print("Prev")
+            return
+        if event.key() == Qt.Key.Key_Down and modifier == Qt.ControlModifier:
+            print("Next")
+
+    def setDarkMode(self, dark):
+        """testing"""
+
+        if dark:
+            darkPalette = QtGui.QPalette()
+            darkColor = QtGui.QColor(56, 56, 56)
+            disabledColor = QtGui.QColor(127, 127, 127)
+            darkPalette.setColor(QtGui.QPalette.Window, darkColor)
+            darkPalette.setColor(QtGui.QPalette.WindowText, Qt.white)
+            darkPalette.setColor(QtGui.QPalette.Base, QtGui.QColor(45, 45, 45))
+            darkPalette.setColor(QtGui.QPalette.AlternateBase, darkColor)
+            darkPalette.setColor(QtGui.QPalette.Text, Qt.white)
+            darkPalette.setColor(
+                QtGui.QPalette.Disabled, QtGui.QPalette.Text, disabledColor
+            )
+            darkPalette.setColor(QtGui.QPalette.Button, darkColor)
+            darkPalette.setColor(QtGui.QPalette.ButtonText, Qt.white)
+            darkPalette.setColor(
+                QtGui.QPalette.Disabled, QtGui.QPalette.ButtonText, disabledColor
+            )
+            darkPalette.setColor(QtGui.QPalette.BrightText, Qt.red)
+            darkPalette.setColor(QtGui.QPalette.Link, QtGui.QColor(42, 130, 218))
+            darkPalette.setColor(QtGui.QPalette.Highlight, QtGui.QColor(42, 130, 218))
+            darkPalette.setColor(QtGui.QPalette.HighlightedText, Qt.black)
+            darkPalette.setColor(
+                QtGui.QPalette.Disabled, QtGui.QPalette.HighlightedText, disabledColor
+            )
+            # dark_button_style = (
+            #     "QPushButton {"
+            #     "background-color: rgb(56,56,56);"
+            #     "color: white;"
+            #     "border-style: outset;"
+            #     "border-width: 2px;"
+            #     "border-radius: 5px;"
+            #     "border-color: rgb(45,45,45);"
+            #     "padding: 6px;"
+            #     "}"
+            #     "QPushButton:pressed {"
+            #     "background-color: rgb(127, 127, 127);"
+            #     "border-style: inset;"
+            #     "}"
+            # )
+            # self.current_palette = darkPalette
+            self.setPalette(darkPalette)
+            # self.text_color = Qt.white
+            # self.menuFile.setPalette(darkPalette)
+            # self.menuHelp.setPalette(darkPalette)
+            # self.menuOther.setPalette(darkPalette)
+            # self.menuView.setPalette(darkPalette)
+            # self.menuWindow.setPalette(darkPalette)
+            # self.callsign.setPalette(darkPalette)
+            # self.sent.setPalette(darkPalette)
+            # self.receive.setPalette(darkPalette)
+            # self.other_1.setPalette(darkPalette)
+            # self.other_2.setPalette(darkPalette)
+            # self.cw_entry.setPalette(darkPalette)
+            # self.F1.setStyleSheet(dark_button_style)
+            # self.F2.setStyleSheet(dark_button_style)
+            # self.F3.setStyleSheet(dark_button_style)
+            # self.F4.setStyleSheet(dark_button_style)
+            # self.F5.setStyleSheet(dark_button_style)
+            # self.F6.setStyleSheet(dark_button_style)
+            # self.F7.setStyleSheet(dark_button_style)
+            # self.F8.setStyleSheet(dark_button_style)
+            # self.F9.setStyleSheet(dark_button_style)
+            # self.F10.setStyleSheet(dark_button_style)
+            # self.F11.setStyleSheet(dark_button_style)
+            # self.F12.setStyleSheet(dark_button_style)
+        else:
+            palette = self.style().standardPalette()
+            # self.current_palette = palette
+            self.setPalette(palette)
 
     def poll_radio(self):
         """Get Freq and Mode changes"""
@@ -596,7 +676,11 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def getspots(self):
         """Gets activator spots from pota.app"""
-        self.time.setText(str(datetime.now(timezone.utc)).split()[1].split(".")[0][0:5])
+        self.time.setText(
+            str(datetime.datetime.now(datetime.timezone.utc))
+            .split()[1]
+            .split(".")[0][0:5]
+        )
         self.spots = self.getjson(self.potaurl)
         if self.spots:
             for spot in self.spots:
@@ -872,7 +956,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     bw_start = freq
                     bw_end = freq + ((self.bandwidth) / 1000000)
                 else:
-                    bw_start = freq 
+                    bw_start = freq
                     bw_end = freq - ((self.bandwidth) / 1000000)
             else:
                 bw_start = freq - ((self.bandwidth / 2) / 1000000)
@@ -957,7 +1041,9 @@ class MainWindow(QtWidgets.QMainWindow):
             spot = self.spotdb.getspot_byid(spotId)
             item = f"xxx {spot.get('activator')} {spot.get('reference')} {int(spot.get('frequency')*1000)} {spot.get('mode')}"
             self.loggable = True
-            dateandtime = datetime.utcnow().isoformat(" ")[:19]
+            dateandtime = datetime.datetime.now(datetime.timezone.utc).isoformat(" ")[
+                :19
+            ]
             self.time_field.setText(dateandtime.split(" ")[1].replace(":", ""))
             the_date_fields = dateandtime.split(" ")[0].split("-")
             the_date = f"{the_date_fields[0]}{the_date_fields[1]}{the_date_fields[2]}"

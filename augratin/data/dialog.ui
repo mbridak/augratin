@@ -258,7 +258,7 @@
              <x>0</x>
              <y>0</y>
              <width>393</width>
-             <height>564</height>
+             <height>563</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -275,6 +275,9 @@
                 <family>JetBrains Mono</family>
                 <pointsize>11</pointsize>
                </font>
+              </property>
+              <property name="focusPolicy">
+               <enum>Qt::NoFocus</enum>
               </property>
               <property name="alignment">
                <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
@@ -850,8 +853,8 @@ color:rgb(255, 255, 255);</string>
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_11">
           <item>
-           <widget class="QWebEngineView" name="mapview" native="true">
-            <property name="url" stdset="0">
+           <widget class="QWebEngineView" name="mapview">
+            <property name="url">
              <url>
               <string>about:blank</string>
              </url>
