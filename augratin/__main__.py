@@ -31,18 +31,13 @@ from augratin.lib.udp_broadcast import broadcast_adif
 import psutil
 from PyQt6 import QtCore, QtWidgets, QtGui, uic
 from PyQt6.QtCore import QDir, Qt
-from PyQt6.QtGui import QFontDatabase, QBrush, QColor, QColorConstants
+from PyQt6.QtGui import QFontDatabase, QColorConstants
 from PyQt6.QtWidgets import QApplication
 
-# from PyQt6.QtGui import QColorConstants, QPalette, QColor
 import PyQt6.QtWebEngineWidgets  # pylint: disable=unused-import
 
 import requests
 import folium
-
-# if os.environ.get("XDG_CURRENT_DESKTOP", False) == "GNOME":
-#     os.environ["QT_QPA_PLATFORMTHEME"] = "gnome"
-#     os.environ["QT_STYLE_OVERRIDE"] = "Adwaita-Dark"
 
 try:
     from augratin.lib.version import __version__
@@ -65,7 +60,7 @@ if loader is not None:
     WORKING_PATH = os.path.dirname(loader)
 else:
     WORKING_PATH = "./"
-# WORKING_PATH = os.path.dirname(loader.get_filename())
+
 
 logger = logging.getLogger("__name__")
 handler = logging.StreamHandler()
@@ -341,13 +336,12 @@ class MainWindow(QtWidgets.QMainWindow):
         super().__init__(parent)
         data_path = WORKING_PATH + "/data/dialog.ui"
         uic.loadUi(data_path, self)
-        # QApplication.instance().focusObjectChanged.connect(self.on_focus_changed)
 
         self.settings = {
             "mycall": "",
             "mygrid": "",
         }
-        # self.setDarkMode()
+
         try:
             home = os.path.expanduser("~")
             if os.path.exists(f"{home}/.augratin.json"):
@@ -949,10 +943,7 @@ class MainWindow(QtWidgets.QMainWindow):
         """doc"""
         logger.debug("%s", f"{band}")
         if band != self.currentBand.name:
-            # if savePrevBandZoom:
-            #     self.saveCurrentZoom()
             self.currentBand = Band(band)
-            # self.zoom = self.savedZoom(band)
             self.update()
 
     def clear_all_callsign_from_scene(self):
@@ -984,7 +975,6 @@ class MainWindow(QtWidgets.QMainWindow):
         if selected:
             spotId = selected.property("spotId")
             spotfreq = int(selected.property("freq") * 1000000)
-            # spotmode = selected.property("mode")
 
         # old stuff
         try:
@@ -1181,7 +1171,6 @@ def install_icons():
 
 
 app = QtWidgets.QApplication(sys.argv)
-# app.setStyle("Fusion")
 font_dir = WORKING_PATH + "/data"
 families = load_fonts_from_dir(os.fspath(font_dir))
 logger.info(families)
