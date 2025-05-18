@@ -49,12 +49,14 @@ class OmniRigClient:
             logging.debug("Omnirig connection failed")
 
     def set_vfo(self, freq: str) -> bool:
-        """Sets the radios vfo"""
+        """Sets the radio vfos to the given frequency"""
         if self.rig == 1:
-            self.omnirig_object.Rig1.SetSimplexMode(int(freq))
+            self.omnirig_object.Rig1.FreqA = int(freq)
+            self.omnirig_object.Rig1.FreqB = int(freq)
             return True
         if self.rig == 2:
-            self.omnirig_object.Rig2.SetSimplexMode(int(freq))
+            self.omnirig_object.Rig2.FreqA = int(freq)
+            self.omnirig_object.Rig2.FreqB = int(freq)
             return True
         return False
 
@@ -62,6 +64,8 @@ class OmniRigClient:
         """
         Sets the raidos mode
         Convert Mode to Omnirig param
+        Omnirig standar params only support setting the mode
+        for the main reciever, not the sub reciever.
         """
         if mode == "CW":
             omni_mode = 8388608  # CW-U Omnirig Param

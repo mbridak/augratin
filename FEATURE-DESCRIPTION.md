@@ -9,3 +9,4 @@ this branch also has some configuration files for setting up a devcontainer for 
 
 Webview: container uses desktop-lite for graphical interface via VNC(port 5901) or webview(port:6080)
 
+Also changed the approach of setting VFOs in Omnirig to enable diversity tuning on my rig (ie: the application sets boths VFOs to the same freqency). Omnirig doesn't support setting modes for the sub reciever as standard so I enabled this through a hack of the .ini file. May update this properly in the future with commandline arguements to enable and use Omnirig's custom fuction to set the sub mode but I'm a bit lazy at the moment and this works. 
