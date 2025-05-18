@@ -13,7 +13,7 @@
   - [Features](#features)
   - [What to do if your map is blank](#what-to-do-if-your-map-is-blank)
   - [What to do if omnirig fails to connect](#what-to-do-if-omnirig-fails-to-connect)
-  - [CAT control](#cat-control)
+  - [CAT control and things](#cat-control-and-things)
 
 ## Why AuGratin
 
@@ -32,12 +32,14 @@ It pulls latest [POTA](https://parksontheair.com) spots. Displays them in a comp
 Once a spot is clicked on AuGratin will talk to either rigctld, flrig, or OmniRig to change the radio to the correct
 frequency and mode. It will pre-populate All the fields needed for logging the contact.
 All contacts are stored in an ADIF file in your home directory,
-which you can then import into your normal logging program.
+which you can then import into your normal logging program. It also broadcasts QSOs via standard UDP protocol which is reconized by most major loggers for automatic import. 
 
 ![screenshot](https://github.com/mbridak/augratin/raw/master/pic/screenshot.png)
 
 ## Recent changes
 
+- [25-5-18] Updated Omnirig CAT to sync both VFOs to use diversity tuning. Setting Mode of the SUB reciever is acheived through an omnirig hack of the .ini file.
+- [23-12-22] Added UDP broadcast of ADIF info for popular logging software integration (tested with HRD)
 - [23-5-26] Added Ubuntu dark mode if adwaita-qt is installed.
 - [23-5-18] Fix crashes related to if flrig running w/ no radio, or flrig closes. Add dialog message window to initial startup if CAT control failed. For some reason I was missing the 17m band. Added back band selector for those who have CAT.
 - [23-5-17] Reworked bandmap display. Spots with QRT in comment are now muted. Center bandmap on RX freq when changing vfo or zooming display. Provided Non CAT control users to change bands.
@@ -64,6 +66,7 @@ augratin
 
 ## Features
 
+- UDP broadcasting of QSOs for integration into logging software
 - Shows spots on a band map
 - You can filter spots by mode.
 - Pulls in park and activator information.
@@ -96,7 +99,7 @@ sudo apt install python3-pyqt5 python3-pyqt5.qtwebengine
 
 On occasion the win32 cache files can get corrupted preventing connection to omnirig. If omnirig was previously working but the continues to fail try erasing the cache files located here: C:\Users\username*\AppData\Local\Temp\gen_py\python version*
 
-## CAT control
+## CAT control and things
 
 If no command line options are given, the program will check if either flrig, rigctld or OmniRig are running on the computer. It will setup CAT control to whichever it finds first.
 
@@ -109,3 +112,5 @@ You can force it to use either with commandline options.
 `-2` will force 'Rig2' with OmniRig.
 
 `-s SERVER:PORT` will specify a non-standard host and port.
+
+`-u UDP_SERVER:PORT` will specify a desired UDP server and port - Default is localhost:2333.
