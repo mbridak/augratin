@@ -13,7 +13,7 @@ authors = [
 ]
 
 dependencies = [
-    "PyQt5",
+    "PyQt6",
     "PyQtWebEngine",
     "requests",
     "psutil",
