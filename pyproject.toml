@@ -14,7 +14,7 @@ authors = [
 
 dependencies = [
     "PyQt6",
-    "PyQtWebEngine",
+    "PyQt6-WebEngine",
     "requests",
     "psutil",
     "folium",
