@@ -32,13 +32,13 @@ It pulls latest [POTA](https://parksontheair.com) spots. Displays them in a comp
 Once a spot is clicked on AuGratin will talk to either rigctld, flrig, or OmniRig to change the radio to the correct
 frequency and mode. It will pre-populate All the fields needed for logging the contact.
 All contacts are stored in an ADIF file in your home directory,
-which you can then import into your normal logging program. It also broadcasts QSOs via standard UDP protocol which is reconized by most major loggers for automatic import. 
+which you can then import into your normal logging program. It also broadcasts QSOs via standard UDP protocol which is reconized by most major loggers for automatic import.
 
 ![screenshot](https://github.com/mbridak/augratin/raw/master/pic/screenshot.png)
 
 ## Recent changes
 
-- [25-5-18] Updated Omnirig CAT to sync both VFOs to use diversity tuning. Setting Mode of the SUB reciever is acheived through an omnirig hack of the .ini file.
+- [25-5-18] Updated Omnirig CAT to sync both VFOs to use diversity tuning. Setting Mode of the SUB reciever is acheived through an omnirig hack of the .ini file. Removed use of depricated pkgutil.getloader()
 - [23-12-22] Added UDP broadcast of ADIF info for popular logging software integration (tested with HRD)
 - [23-5-26] Added Ubuntu dark mode if adwaita-qt is installed.
 - [23-5-18] Fix crashes related to if flrig running w/ no radio, or flrig closes. Add dialog message window to initial startup if CAT control failed. For some reason I was missing the 17m band. Added back band selector for those who have CAT.

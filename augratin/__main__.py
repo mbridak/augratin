@@ -20,7 +20,7 @@ import os
 import io
 import logging
 from math import radians, sin, cos, atan2, sqrt, asin, pi
-import pkgutil
+
 from pathlib import Path
 
 from json import loads, dumps
@@ -57,9 +57,9 @@ except ModuleNotFoundError:
 __author__ = "Michael C. Bridak, K6GTE"
 __license__ = "GNU General Public License v3.0"
 
-loader = pkgutil.get_loader("augratin")
+loader = __loader__.get_filename()
 if loader is not None:
-    WORKING_PATH = os.path.dirname(loader.get_filename())
+    WORKING_PATH = os.path.dirname(loader)
 else:
     WORKING_PATH = "./"
 # WORKING_PATH = os.path.dirname(loader.get_filename())
