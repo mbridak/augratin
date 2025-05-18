@@ -29,17 +29,20 @@ import re
 from augratin.lib.udp_broadcast import broadcast_adif
 
 import psutil
-from PyQt5 import QtCore, QtWidgets, QtGui, uic
-from PyQt5.QtCore import QDir, Qt
-from PyQt5.QtGui import QFontDatabase, QBrush, QColor
-import PyQt5.QtWebEngineWidgets  # pylint: disable=unused-import
+from PyQt6 import QtCore, QtWidgets, QtGui, uic
+from PyQt6.QtCore import QDir, Qt
+from PyQt6.QtGui import QFontDatabase, QBrush, QColor, QColorConstants
+from PyQt6.QtWidgets import QApplication
+
+# from PyQt6.QtGui import QColorConstants, QPalette, QColor
+import PyQt6.QtWebEngineWidgets  # pylint: disable=unused-import
 
 import requests
 import folium
 
-if os.environ.get("XDG_CURRENT_DESKTOP", False) == "GNOME":
-    os.environ["QT_QPA_PLATFORMTHEME"] = "gnome"
-    os.environ["QT_STYLE_OVERRIDE"] = "Adwaita-Dark"
+# if os.environ.get("XDG_CURRENT_DESKTOP", False) == "GNOME":
+#     os.environ["QT_QPA_PLATFORMTHEME"] = "gnome"
+#     os.environ["QT_STYLE_OVERRIDE"] = "Adwaita-Dark"
 
 try:
     from augratin.lib.version import __version__
@@ -338,12 +341,13 @@ class MainWindow(QtWidgets.QMainWindow):
         super().__init__(parent)
         data_path = WORKING_PATH + "/data/dialog.ui"
         uic.loadUi(data_path, self)
+        # QApplication.instance().focusObjectChanged.connect(self.on_focus_changed)
 
         self.settings = {
             "mycall": "",
             "mygrid": "",
         }
-        self.setDarkMode(True)
+        # self.setDarkMode()
         try:
             home = os.path.expanduser("~")
             if os.path.exists(f"{home}/.augratin.json"):
@@ -440,6 +444,10 @@ class MainWindow(QtWidgets.QMainWindow):
         data = io.BytesIO()
         self.map.save(data, close_file=False)
         self.mapview.setHtml(data.getvalue().decode())
+        QApplication.instance().styleHints().colorSchemeChanged.connect(
+            self.setDarkMode
+        )
+        self.setDarkMode()
 
     def keyPressEvent(self, event):  # pylint: disable=invalid-name
         """This overrides Qt key event."""
@@ -450,39 +458,21 @@ class MainWindow(QtWidgets.QMainWindow):
         if event.key() == Qt.Key.Key_Down and modifier == Qt.ControlModifier:
             print("Next")
 
-    def setDarkMode(self, dark):
-        """testing"""
+    def is_it_dark(self) -> bool:
+        """Returns if the DE has a dark theme active."""
+        hints = QtGui.QGuiApplication.styleHints()
+        scheme = hints.colorScheme()
+        return scheme == Qt.ColorScheme.Dark
 
-        if dark:
-            darkPalette = QtGui.QPalette()
-            darkColor = QtGui.QColor(56, 56, 56)
-            disabledColor = QtGui.QColor(127, 127, 127)
-            darkPalette.setColor(QtGui.QPalette.Window, darkColor)
-            darkPalette.setColor(QtGui.QPalette.WindowText, Qt.white)
-            darkPalette.setColor(QtGui.QPalette.Base, QtGui.QColor(45, 45, 45))
-            darkPalette.setColor(QtGui.QPalette.AlternateBase, darkColor)
-            darkPalette.setColor(QtGui.QPalette.Text, Qt.white)
-            darkPalette.setColor(
-                QtGui.QPalette.Disabled, QtGui.QPalette.Text, disabledColor
-            )
-            darkPalette.setColor(QtGui.QPalette.Button, darkColor)
-            darkPalette.setColor(QtGui.QPalette.ButtonText, Qt.white)
-            darkPalette.setColor(
-                QtGui.QPalette.Disabled, QtGui.QPalette.ButtonText, disabledColor
-            )
-            darkPalette.setColor(QtGui.QPalette.BrightText, Qt.red)
-            darkPalette.setColor(QtGui.QPalette.Link, QtGui.QColor(42, 130, 218))
-            darkPalette.setColor(QtGui.QPalette.Highlight, QtGui.QColor(42, 130, 218))
-            darkPalette.setColor(QtGui.QPalette.HighlightedText, Qt.black)
-            darkPalette.setColor(
-                QtGui.QPalette.Disabled, QtGui.QPalette.HighlightedText, disabledColor
-            )
+    def setDarkMode(self):
+        """Set dark mode"""
 
-            self.setPalette(darkPalette)
-
+        setdarkmode = self.is_it_dark()
+        if setdarkmode is True:
+            self.text_color = QColorConstants.White
         else:
-            palette = self.style().standardPalette()
-            self.setPalette(palette)
+            self.text_color = QColorConstants.Black
+        self.update()
 
     def poll_radio(self):
         """Get Freq and Mode changes"""
@@ -712,6 +702,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.clear_freq_mark(self.rxMark)
         self.clear_freq_mark(self.txMark)
         self.clear_freq_mark(self.bandwidth_mark)
+
         self.bandmap_scene.clear()
 
         step, _digits = self.determine_step_digits()
@@ -796,8 +787,8 @@ class MainWindow(QtWidgets.QMainWindow):
                     text.document().setDocumentMargin(0)
                     text.setPos(210, text_y - (text.boundingRect().height() / 2))
                     text.setFlags(
-                        QtWidgets.QGraphicsItem.ItemIsFocusable
-                        | QtWidgets.QGraphicsItem.ItemIsSelectable
+                        QtWidgets.QGraphicsItem.GraphicsItemFlag.ItemIsFocusable
+                        | QtWidgets.QGraphicsItem.GraphicsItemFlag.ItemIsSelectable
                         | text.flags()
                     )
                     text.setProperty("freq", items.get("frequency"))
