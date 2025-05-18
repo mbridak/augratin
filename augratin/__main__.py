@@ -418,8 +418,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.spotdb = Database()
         self.comboBox_mode.currentTextChanged.connect(self.getspots)
         self.comboBox_band.currentTextChanged.connect(self.nocat_bandchange)
-        # if self.cat_control is not None:
-        #     self.comboBox_band.hide()
 
         self.mycall_field.textEdited.connect(self.save_call_and_grid)
         self.mygrid_field.textEdited.connect(self.save_call_and_grid)
@@ -479,50 +477,11 @@ class MainWindow(QtWidgets.QMainWindow):
             darkPalette.setColor(
                 QtGui.QPalette.Disabled, QtGui.QPalette.HighlightedText, disabledColor
             )
-            # dark_button_style = (
-            #     "QPushButton {"
-            #     "background-color: rgb(56,56,56);"
-            #     "color: white;"
-            #     "border-style: outset;"
-            #     "border-width: 2px;"
-            #     "border-radius: 5px;"
-            #     "border-color: rgb(45,45,45);"
-            #     "padding: 6px;"
-            #     "}"
-            #     "QPushButton:pressed {"
-            #     "background-color: rgb(127, 127, 127);"
-            #     "border-style: inset;"
-            #     "}"
-            # )
-            # self.current_palette = darkPalette
+
             self.setPalette(darkPalette)
-            # self.text_color = Qt.white
-            # self.menuFile.setPalette(darkPalette)
-            # self.menuHelp.setPalette(darkPalette)
-            # self.menuOther.setPalette(darkPalette)
-            # self.menuView.setPalette(darkPalette)
-            # self.menuWindow.setPalette(darkPalette)
-            # self.callsign.setPalette(darkPalette)
-            # self.sent.setPalette(darkPalette)
-            # self.receive.setPalette(darkPalette)
-            # self.other_1.setPalette(darkPalette)
-            # self.other_2.setPalette(darkPalette)
-            # self.cw_entry.setPalette(darkPalette)
-            # self.F1.setStyleSheet(dark_button_style)
-            # self.F2.setStyleSheet(dark_button_style)
-            # self.F3.setStyleSheet(dark_button_style)
-            # self.F4.setStyleSheet(dark_button_style)
-            # self.F5.setStyleSheet(dark_button_style)
-            # self.F6.setStyleSheet(dark_button_style)
-            # self.F7.setStyleSheet(dark_button_style)
-            # self.F8.setStyleSheet(dark_button_style)
-            # self.F9.setStyleSheet(dark_button_style)
-            # self.F10.setStyleSheet(dark_button_style)
-            # self.F11.setStyleSheet(dark_button_style)
-            # self.F12.setStyleSheet(dark_button_style)
+
         else:
             palette = self.style().standardPalette()
-            # self.current_palette = palette
             self.setPalette(palette)
 
     def poll_radio(self):
@@ -738,11 +697,11 @@ class MainWindow(QtWidgets.QMainWindow):
             home + "/POTA_Contacts.adi", "a", encoding="utf-8"
         ) as file_descriptor:
             print(qso, file=file_descriptor)
-        
+
         # Broadcast ADIF to listeners via UDP
         result = broadcast_adif(qso, UDP_SERVER)
-        logger.debug("Broadcast result: %s", result)    
-   
+        logger.debug("Broadcast result: %s", result)
+
         self.clear_fields()
         self.loggable = False
 
