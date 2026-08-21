@@ -81,7 +81,7 @@ When you press the "Log it" button the adif information is appended to `POTA_Con
 Not sure why, but the map may not work if you let pip install PyQt5 and PyQtWebEngine automatically. If your map is blank, try:
 
 ```bash
-pip uninstall PyQt5
+pip uninstall PyQt6
 pip uninstall PyQtWebEngine
 ```
 
@@ -89,10 +89,10 @@ Then install them through your package manager.
 
 ```bash
 #fedora
-sudo dnf install python3-qt5 python3-qt5-webengine
+sudo dnf install python3-qt6 python3-qt6-webengine
 
 #ubuntu
-sudo apt install python3-pyqt5 python3-pyqt5.qtwebengine
+sudo apt install python3-pyqt6 python3-pyqt6.qtwebengine
 ```
 
 ## What to do if omnirig fails to connect
